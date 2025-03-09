@@ -1,0 +1,9 @@
+ALU.v
+control_unit.v
+hazard_detection_unit.v
+memory.v
+parameters.v
+pipeline_regs.v
+processor.v
+program_counter.v
+reg_file.v

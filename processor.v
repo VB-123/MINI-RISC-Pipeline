@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+`include "parameters.v"
 //////////////////////////////////////////////////////////////////////////////////
 // Company:
 // Engineer:
@@ -19,17 +19,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 
-`timescale 1ns / 1ps
-
 module pipelined_processor;
-  `include "parameters.v"
   
   // Special registers
   reg clk;
   reg rst;
   
   // Memory arrays
-  reg [15:0] instruction_mem[0:MEMORY_DEPTH-1];  // Instruction memory
+  reg [15:0] instruction_mem[0:`MEMORY_DEPTH-1];  // Instruction memory
   
   // =====================
   // FETCH STAGE SIGNALS
@@ -118,7 +115,7 @@ module pipelined_processor;
   // Fetch stage
   assign instruction_F = instruction_mem[pc_F];
   
-  // Decode stage
+  // Decode stage 
   assign opcode_D = instruction_D[15:11];
   assign rd_D = instruction_D[10:8];       // Destination register
   assign rs1_D = instruction_D[7:5];       // Source register 1
@@ -185,7 +182,7 @@ module pipelined_processor;
     .clk(clk),
     .rst(rst),
     .write_en_0(reg_write_W ? write_mode_W : 2'b00),
-    .write_en_1((opcode_W == MUL) || (opcode_W == DIV) ? 2'b11 : 2'b00), // For high result in MUL/DIV
+    .write_en_1((opcode_W == `MUL) || (opcode_W == `DIV) ? 2'b11 : 2'b00), // For high result in MUL/DIV
     .read_addr_0(rs1_D),
     .read_addr_1(rs2_D),
     .reg_write_addr_0(rd_W),
@@ -325,24 +322,20 @@ module pipelined_processor;
   // =====================
   initial begin
     $display("Loading test program...");
-    // Sample test program (same as single-cycle)
-    instruction_mem[0] = {LBH, REG0, 8'd255};      
-    instruction_mem[1] = {LBL, REG0, 8'd16};      
-    instruction_mem[2] = {INC, REG1, REG0, 5'bx};
-    instruction_mem[3] = {INC, REG2, REG1, 5'bx};
-    instruction_mem[4] = {INC, REG3, REG2, 5'bx};
-    instruction_mem[5] = {INC, REG4, REG3, 5'bx};
-    instruction_mem[6] = {INC, REG5, REG4, 5'bx};
-    instruction_mem[7] = {INC, REG6, REG5, 5'bx};
-    instruction_mem[8] = {INC, REG7, REG6, 5'bx};
-    instruction_mem[9] = {HALT, 11'bx};
-    
+    // Sample test program
+      instruction_mem[0] = {`LBL, `REG0, 8'hFF};
+      instruction_mem[1] = {`LBL, `REG1, 8'hFF};
+      instruction_mem[2] = {`LBL, `REG2, 8'hFF};
+      instruction_mem[3] = {`LBH, `REG0, 8'hFF};
+      instruction_mem[4] = {`LBH, `REG1, 8'hFF};
+      instruction_mem[5] = {`LBH, `REG2, 8'hFF};
+      instruction_mem[6] = {`HALT, 11'bx};
     reset;
     
     // Run for some cycles and finish
     repeat(20) @(posedge clk);
     
-    if (opcode_W == HALT)
+    if (opcode_W == `HALT)
       $display("Program completed successfully!");
     else
       $display("Program did not complete (no HALT instruction reached)");
@@ -353,92 +346,119 @@ module pipelined_processor;
   // Monitor pipeline stages for debugging
 
   // Test block
-  initial begin
-    alu_test_inc;
-    reset;
-  end
+initial begin
+  $display("Starting processor test suite...");
+  
+  // Run all test cases sequentially
+  alu_test_inc;
+  repeat(20) @(posedge clk);
+  $display("\n");
+  
+  load_test_1;
+  reset;
+  repeat(20) @(posedge clk);
+  $display("\n");
+  
+  load_test_2;
+  reset;
+  repeat(20) @(posedge clk);
+  $display("\n");
+  
+  mov_test_1;
+  reset;
+  repeat(20) @(posedge clk);
+  $display("\n");
+  
+  load_store_test;
+  reset;
+  repeat(20) @(posedge clk);
+  
+  $display("All tests completed!");
+  $finish;
+end
 
-  task reset;
-    begin
-    rst = 0;
-    @(posedge clk);
-    rst = 1;
-    @(posedge clk);
-    rst = 0;
-    @(posedge clk);
-    end
-  endtask
+// Add monitoring logic to track pipeline stages
+initial begin
+  $monitor("Time=%0t, PC_F=%0d, Instr_F=%h, Instr_D=%h, Opcode_E=%h, ALU_Result=%h, Reg_Write_W=%b, Reg_Addr_W=%d, Write_Data=%h",
+           $time, pc_F, instruction_F, instruction_D, opcode_E, alu_result_0_E, reg_write_W, rd_W, reg_write_data_W);
+end
+
+initial begin
+  $dumpfile("pipelined_processor.vcd");
+  $dumpvars(0, pipelined_processor);
+end
+
 
   task load_test_1;
     begin
       $display("load test 1");
-      instruction_mem[0] = {LBL, REG0, 8'hFF};
-      instruction_mem[1] = {LBL, REG1, 8'hFF};
-      instruction_mem[2] = {LBL, REG2, 8'hFF};
-      instruction_mem[3] = {LBH, REG0, 8'hFF};
-      instruction_mem[4] = {LBH, REG1, 8'hFF};
-      instruction_mem[5] = {LBH, REG2, 8'hFF};
-      instruction_mem[6] = {HALT, 11'bx};
+      instruction_mem[0] = {`LBL, `REG0, 8'hFF};
+      instruction_mem[1] = {`LBL, `REG1, 8'hFF};
+      instruction_mem[2] = {`LBL, `REG2, 8'hFF};
+      instruction_mem[3] = {`LBH, `REG0, 8'hFF};
+      instruction_mem[4] = {`LBH, `REG1, 8'hFF};
+      instruction_mem[5] = {`LBH, `REG2, 8'hFF};
+      instruction_mem[6] = {`HALT, 11'bx};
     end
   endtask
 
   task load_test_2;
     begin
       $display("load test 2");
-      instruction_mem[0] = {LBL, REG0, 8'h01};
-      instruction_mem[1] = {LBL, REG1, 8'h02};
-      instruction_mem[2] = {LBL, REG2, 8'hF3};
-      instruction_mem[3] = {LBH, REG0, 8'hF4};
-      instruction_mem[4] = {LBH, REG1, 8'hF5};
-      instruction_mem[5] = {LBH, REG2, 8'hF6};
-      instruction_mem[6] = {HALT, 11'bx};
+      instruction_mem[0] = {`LBL, `REG0, 8'h01};
+      instruction_mem[1] = {`LBL, `REG1, 8'h02};
+      instruction_mem[2] = {`LBL, `REG2, 8'hF3};
+      instruction_mem[3] = {`LBH, `REG0, 8'hF4};
+      instruction_mem[4] = {`LBH, `REG1, 8'hF5};
+      instruction_mem[5] = {`LBH, `REG2, 8'hF6};
+      instruction_mem[6] = {`HALT, 11'bx};
     end
   endtask
 
   task mov_test_1;
     begin
       $display("mov test 1");
-      instruction_mem[0] = {LBL, REG0, 8'h01};
-      instruction_mem[1] = {LBL, REG1, 8'h02};
-      instruction_mem[2] = {LBL, REG2, 8'hF3};
-      instruction_mem[3] = {LBH, REG0, 8'hF1};
-      instruction_mem[4] = {LBH, REG1, 8'hF2};
-      instruction_mem[5] = {LBH, REG2, 8'hF3};
-      instruction_mem[6] = {MOV, REG7, REG0, 5'bx};
-      instruction_mem[7] = {MOV, REG6, REG1, 5'bx};
-      instruction_mem[8] = {MOV, REG5, REG2, 5'bx};
-      instruction_mem[9] = {HALT, 11'bx};
+      instruction_mem[0] = {`LBL, `REG0, 8'h01};
+      instruction_mem[1] = {`LBL, `REG1, 8'h02};
+      instruction_mem[2] = {`LBL, `REG2, 8'hF3};
+      instruction_mem[3] = {`LBH, `REG0, 8'hF1};
+      instruction_mem[4] = {`LBH, `REG1, 8'hF2};
+      instruction_mem[5] = {`LBH, `REG2, 8'hF3};
+      instruction_mem[6] = {`MOV, `REG7, `REG0, 5'bx};
+      instruction_mem[7] = {`MOV, `REG6, `REG1, 5'bx};
+      instruction_mem[8] = {`MOV, `REG5, `REG2, 5'bx};
+      instruction_mem[9] = {`HALT, 11'bx};
     end
   endtask
 
   task load_store_test;
   begin
   $display("load_store_test");
-    instruction_mem[0] = {LBH, REG0, 8'd1};
-    instruction_mem[1] = {LBL, REG0, 8'd1};
-    instruction_mem[2] = {LBH, REG1, 8'd255};
-    instruction_mem[3] = {LBL, REG1, 8'd255};
-    instruction_mem[4] = {LBH, REG2, 8'd2};
-    instruction_mem[5] = {LBL, REG2, 8'd2};
-    instruction_mem[6] = {STORE, 3'bx, REG2, REG1, 2'bx};
-    instruction_mem[7] = {LOAD, REG3, REG2, 5'bx};
-    instruction_mem[8] = {HALT, 11'bx};
+    instruction_mem[0] = {`LBH, `REG0, 8'd1};
+    instruction_mem[1] = {`LBL, `REG0, 8'd1};
+    instruction_mem[2] = {`LBH, `REG1, 8'd255};
+    instruction_mem[3] = {`LBL, `REG1, 8'd255};
+    instruction_mem[4] = {`LBH, `REG2, 8'd2};
+    instruction_mem[5] = {`LBL, `REG2, 8'd2};
+    instruction_mem[6] = {`STORE, 3'bx, `REG2, `REG1, 2'bx};
+    instruction_mem[7] = {`LOAD, `REG3, `REG2, 5'bx};
+    instruction_mem[8] = {`HALT, 11'bx};
   end
   endtask
 
   task alu_test_inc;
   begin
   $display("alu_test_inc");
-    instruction_mem[0] = {LBH, REG0, 8'd255};      
-    instruction_mem[1] = {LBL, REG0, 8'd16};      
-    instruction_mem[2] = {INC, REG1, REG0, 5'bx};
-    instruction_mem[3] = {INC, REG2, REG1, 5'bx};
-    instruction_mem[4] = {INC, REG3, REG2, 5'bx};
-    instruction_mem[5] = {INC, REG4, REG3, 5'bx};
-    instruction_mem[6] = {INC, REG5, REG4, 5'bx};
-    instruction_mem[7] = {INC, REG6, REG5, 5'bx};
-    instruction_mem[8] = {INC, REG7, REG6, 5'bx};
-    instruction_mem[9] = {HALT, 11'bx};
+    instruction_mem[0] = {`LBH, `REG0, 8'd255};      
+    instruction_mem[1] = {`LBL, `REG0, 8'd16};      
+    instruction_mem[2] = {`INC, `REG1, `REG0, 5'bx};
+    instruction_mem[3] = {`INC, `REG2, `REG1, 5'bx};
+    instruction_mem[4] = {`INC, `REG3, `REG2, 5'bx};
+    instruction_mem[5] = {`INC, `REG4, `REG3, 5'bx};
+    instruction_mem[6] = {`INC, `REG5, `REG4, 5'bx};
+    instruction_mem[7] = {`INC, `REG6, `REG5, 5'bx};
+    instruction_mem[8] = {`INC, `REG7, `REG6, 5'bx};
+    instruction_mem[9] = {`HALT,11'bx};
   end
   endtask
 

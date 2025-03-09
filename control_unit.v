@@ -1,3 +1,4 @@
+`include "parameters.v"
 module control_unit (
     input wire [4:0] opcode,      // from instruction register
     
@@ -12,7 +13,7 @@ module control_unit (
     output reg [1:0] write_mode,  // 00: No write, 01: low byte, 10: high byte, 11: full word
     output reg alu_op             // ALU operation control (simplified for example)
 );
-  `include "parameters.v"
+
 
   always @(*) begin
     // Default control signals
@@ -28,64 +29,64 @@ module control_unit (
     
     case (opcode)
       // ALU operations
-      ADD, MUL, SUB, DIV, NOT, AND, OR, XOR, INC, CMP, RR, RL, SETB, CLRB, CPLB: begin
+      `ADD, `MUL, `SUB, `DIV, `NOT, `AND, `OR, `XOR, `INC, `CMP, `RR, `RL, `SETB, `CLRB, `CPLB: begin
         reg_write = 1'b1;
         write_mode = 2'b11;  // Full word
         alu_op = 1'b1;
       end
       
       // Flag operations
-      SETF, CLRF, CPLF: begin
+      `SETF, `CLRF, `CPLF: begin
         alu_op = 1'b1;  // Use ALU for flag operations
       end
       
       // Memory operations
-      LOAD: begin
+      `LOAD: begin
         reg_write = 1'b1;
         mem_read = 1'b1;
         mem_to_reg = 1'b1;
         write_mode = 2'b11;  // Full word
       end
       
-      STORE: begin
+      `STORE: begin
         mem_write = 1'b1;
       end
       
       // Immediate load operations
-      LBL: begin
+      `LBL: begin
         reg_write = 1'b1;
         alu_src = 1'b1;    // Use immediate
         write_mode = 2'b01;  // Low byte
       end
       
-      LBH: begin
+      `LBH: begin
         reg_write = 1'b1;
         alu_src = 1'b1;    // Use immediate
         write_mode = 2'b10;  // High byte
       end
       
       // Register transfer operations
-      MOV: begin
+      `MOV: begin
         reg_write = 1'b1;
         write_mode = 2'b11;  // Full word
       end
       
       // Branch/Jump operations
-      JF: begin
+      `JF: begin
         branch = 1'b1;
       end
       
-      LOADBR: begin
+      `LOADBR: begin
         jump = 1'b1;
       end
       
       // I/O operations
-      MOVOUT, MOVIN, MOVB: begin
+      `MOVOUT, `MOVIN, `MOVB: begin
         reg_write = 1'b1;
         write_mode = 2'b11;  // Full word
       end
       
-      HALT: begin
+      `HALT: begin
         // No operation
       end
       
