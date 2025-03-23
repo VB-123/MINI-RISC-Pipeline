@@ -56,11 +56,13 @@ module control_unit (
         mem_to_reg = 1'b1;
         mem_read = 1'b1;   // Set memory read signal
         write_mode = 2'b11; 
+        alu_op = 1'b0;
       end
       
       `STORE: begin
         read_write = 1'b0;
         mem_write = 1'b1;
+        alu_op = 1'b0;
       end
       
       // Immediate load operations
@@ -96,6 +98,7 @@ module control_unit (
         read_write = 1'b1;
         jump = 1'b1;        // Set jump for LOADBR
         write_mode = 2'b11;
+        alu_op = 1'b0;
       end
       
       // I/O operations

@@ -1,8 +1,8 @@
-`include "parameters.v"
 module HAZARD_Unit(
   // Inputs
   input wire [4:0] opcode_D,              // From Decode stage
   input wire [4:0] opcode_E,              // From Execute stage
+  input wire [2:0] rd_D,                  // From Decode stage
   input wire [2:0] source_reg1_D,         // From Decode stage
   input wire [2:0] source_reg2_D,         // From Decode stage
   input wire [2:0] rd_E,                  // From Execute stage
@@ -31,24 +31,25 @@ module HAZARD_Unit(
     // Default: no forwarding
     forward_A = 2'b00;
     forward_B = 2'b00;
-    
-    // Forward from Execute/Writeback to Execute stage for operand A
-    if (reg_write_E && (rd_E == source_reg1_E))
-      forward_A = 2'b10;  // Forward from Execute stage to Execute stage (ALU result)
-    else if (reg_write_W && (rd_W == source_reg1_E))
-      forward_A = 2'b01;  // Forward from Writeback stage to Execute stage
-      
-    // Forward from Execute/Writeback to Execute stage for operand B
-    if (reg_write_E && (rd_E == source_reg2_E))
-      forward_B = 2'b10;  // Forward from Execute stage to Execute stage (ALU result)
-    else if (reg_write_W && (rd_W == source_reg2_E))
-      forward_B = 2'b01;  // Forward from Writeback stage to Execute stage
+    $display("\nHazard unit DEBUG: reg_write_W=%b, rd_W=%d, source_reg1_E=%d, source_reg2_E=%d \n", 
+            reg_write_W, rd_W, source_reg1_E, source_reg2_E);
+    // Forward A (first source operand in Execute stage)
+    if (reg_write_W && (rd_W == source_reg1_E))
+      forward_A = 2'b10;  // Forward from Writeback stage to Execute stage input
+    else
+      forward_A = 2'b00;  // No forwarding
+
+    // Forward B (second source operand in Execute stage)
+    if (reg_write_W && (rd_W == source_reg2_E))
+      forward_B = 2'b10;
+    else
+      forward_B = 2'b00;
   end
   
-  // Load-use hazard detection
-  wire load_use_hazard;
-  assign load_use_hazard = mem_read_E && 
-                         ((rd_E == source_reg1_D) || (rd_E == source_reg2_D));
+  // RAW hazard detection (including load-use but also other dependencies)
+wire raw_hazard;
+assign raw_hazard = reg_write_E && 
+                  ((rd_E == source_reg1_D) || (rd_E == source_reg2_D));
                          
   // Control hazard detection                       
   wire control_hazard;
@@ -61,14 +62,12 @@ module HAZARD_Unit(
     stall_D = 1'b0;
     flush_F = 1'b0;
     flush_D = 1'b0;
-    
-    // Load-use hazard: stall the pipeline
-    if (load_use_hazard) begin
+
+    if (raw_hazard) begin
       stall_F = 1'b1;  // Stall fetch stage
       stall_D = 1'b1;  // Stall decode stage
       flush_D = 1'b1;  // Insert bubble in execute stage
     end
-    
     // Control hazard: flush the pipeline
     if (control_hazard) begin
       flush_F = 1'b1;  // Flush fetch stage

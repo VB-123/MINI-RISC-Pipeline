@@ -144,14 +144,12 @@ module pipelined_processor;
 
   
   // Forwarding logic
-  assign fwd_A = (forward_A == 2'b10) ? alu_result_0_E :
-              (forward_A == 2'b01) ? reg_write_data_0_W :
-              reg_data_1_E;
-              
-  assign fwd_B = (forward_B == 2'b10) ? alu_result_0_E :
-              (forward_B == 2'b01) ? reg_write_data_0_W :
-              reg_data_2_E;
-// Assignments for execute stage
+  // Corrected forwarding MUX logic
+  assign fwd_A = (forward_A == 2'b10) ? reg_write_data_0_W :  // From Writeback stage
+                reg_data_1_E;                               // Normal register value
+
+  assign fwd_B = (forward_B == 2'b10) ? reg_write_data_0_W :  // From Writeback stage
+                  reg_data_2_E;                               // Normal register value
   assign alu_operand_2 = (alu_src_E) ? {8'h00, immediate_E} : fwd_B;
 assign mem_write_data_W = reg_data_2_E; // Data to write to memory
 assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
@@ -222,7 +220,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     // Inputs
     .clk(clk),
     .reset(rst),
-    .next_flags(next_flags_W), // From ALU via EW register
+    .next_flags(next_flags_W),
     // Outputs
     .current_flags(current_flags_D) // To DE Register
   );
@@ -251,11 +249,9 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .flush_D(flush_DE), // From Hazard Unit (checked)
     .opcode_in(opcode_D), // From FD Register (checked)
     .reg_write_addr_in(rd_D), // From FD Register (checked)
-    .source_reg1_in(rs1_D), // From FD Register (checked) // NEWLY ADDED
-    // Try priting out this
-    .source_reg2_in(rs2_D), // From FD Register (checked) // NEWLY ADDED
+    .source_reg1_in(rs1_D), // From FD Register (checked)
+    .source_reg2_in(rs2_D), // From FD Register (checked)
     .reg_data_1_in(reg_data_1_D), // From Register File (checked)
-    // Try priting out this
     .reg_data_2_in(reg_data_2_D),  // From Register File (checked)
     .immediate_in(immediate_D), // From FD Register (checked)
     .bit_position_in(bit_pos_D), // From FD Register (checked)
@@ -362,6 +358,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   // Inputs
   .opcode_D(opcode_D),              // From Decode stage
   .opcode_E(opcode_E),              // From Execute stage
+  .rd_D(rd_D),                      // From Decode stage
   .source_reg1_D(rs1_D),                    // From Decode stage
   .source_reg2_D(rs2_D),                    // From Decode stage
   .rd_E(reg_write_addr_E),          // From Execute stage
@@ -403,10 +400,11 @@ initial begin
   rst = 1'b1;
   
   // Load test program
-  instruction_mem[1] = {`LBL, `REG0, 8'h05};      // Load 0x05 into R0
-  instruction_mem[2] = {`LBL, `REG1, 8'h03};      // Load 0x03 into R1: 1011000100000011: b103
+  instruction_mem[1] = {`LBL, `REG0, 8'hFF};      // Load 0x05 into R0
+  instruction_mem[2] = {`LBL, `REG1, 8'h01};      // Load 0x03 into R1: 1011000100000011: b103
   instruction_mem[3] = {`MOV, `REG2, `REG0, 5'b0};      // Copy R0 to R2 : 110000100000000: c200
-  instruction_mem[4] = {`ADD, `REG3, `REG0, `REG1,2'b0}; // R3 = R0 + R1 : 0000001100000100: 0304
+  instruction_mem[4] = {`MOV, `REG3, `REG0, 5'b0}; // R3 = R0 + R1 : 0000001100000100: 0304
+  instruction_mem[5] = {`ADD, `REG4, `REG0, `REG1,2'b0}; // R3 = R0 + R1 : 0000001100000100: 0304
   
   // Wait for reset
   repeat(2) @(posedge clk);
@@ -414,12 +412,17 @@ initial begin
   rst = 1'b0;
   
   // Monitor pipeline stages
-  repeat(9) @(posedge clk) begin
+  repeat(11) @(posedge clk) begin
     $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, reg_data_2_D = %h", opcode_D, rs1_D, rs2_D, rd_D,reg_data_2_D);
     $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, Forward_A=%b, Forward_B=%b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b", reg_write_addr_W, reg_write_data_0_W, read_write_W);
+    $display("\nFORWARDING DEBUG: forward_A=%b, forward_B=%b", forward_A, forward_B);
+    $display("VALUES: fwd_A=0x%h, fwd_B=0x%h, alu_result_0_E=0x%h, reg_write_data_0_W=0x%h", 
+           fwd_A, fwd_B, alu_result_0_E, reg_write_data_0_W);
+    $display("SOURCES: source_reg1_E=%d, source_reg2_E=%d, rd_E=%d, rd_W=%d\n", 
+           rs1_E, rs2_E, reg_write_addr_E, reg_write_addr_W);
   end
   
   // Display final state
@@ -429,6 +432,7 @@ initial begin
   $display("R1 = %h", reg_file_unit.registers[1]);
   $display("R2 = %h", reg_file_unit.registers[2]);
   $display("R3 = %h", reg_file_unit.registers[3]);
+  $display("R4 = %h", reg_file_unit.registers[4]);
   $display("\nFlags = %b", current_flags_D);
   
   $finish;

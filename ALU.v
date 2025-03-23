@@ -54,7 +54,7 @@ next_flags[7] : Zero  Flag (Z)
       case (opcode)
         `LBL: result_0 = {operand_1[15:8], immediate};  // Immediate to lower byte
         `LBH: result_0 = {immediate, operand_1[7:0]};  // Immediate to upper byte
-        `MOV: result_0 = operand_2;             // Move from rs1 to rd
+        `MOV: result_0 = operand_1;             // Move from rs1 to rd
         default: result_0 = 16'h0000;           // Default case
       endcase
       result_1 = 16'h0000;
