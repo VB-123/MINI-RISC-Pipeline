@@ -1,4 +1,4 @@
-module HAZARD_Unit (
+module HAZARD_Unit_very_old (
     input wire [4:0] opcode_D,       // Opcode in Decode stage
     input wire [4:0] opcode_E,       // Opcode in Execute stage
     input wire [2:0] rs1_D,          // Source register 1 in Decode 

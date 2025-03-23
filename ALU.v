@@ -1,16 +1,18 @@
 `include "parameters.v"
 module ALU (
     // input wire alu_en,
+    input wire alu_en,
     input wire [4:0] opcode,  // from instruction register
-    input wire [15:0] operand_1,  // reg_arg_2 in control unit
-    input wire [15:0] operand_2,  // reg_arg_3 in control unit
+    input wire [15:0] operand_1,
+    input wire [15:0] operand_2,
     input wire [3:0] bit_position,  // set the bit in the postion given by this input
+    input wire [7:0] immediate, 
     input wire [15:0] current_flags,
     output reg [15:0] result_0,  // to the data_in_0
     output reg [15:0] result_1,  // to the data_in_1
     output reg [15:0] next_flags
 );
-
+`include "parameters.v"
   // The Bits of the flag Register
   /*
 next_flags[0] : Carry Flag (C)
@@ -47,7 +49,19 @@ next_flags[7] : Zero  Flag (Z)
   endtask
 
   always @* begin
+    if (!alu_en) begin
+    // Non-ALU operations
+      case (opcode)
+        `LBL: result_0 = {operand_1[15:8], immediate};  // Immediate to lower byte
+        `LBH: result_0 = {immediate, operand_1[7:0]};  // Immediate to upper byte
+        `MOV: result_0 = operand_2;             // Move from rs1 to rd
+        default: result_0 = 16'h0000;           // Default case
+      endcase
+      result_1 = 16'h0000;
+      next_flags = current_flags;
+    end
     // Default flag values
+    else begin
     next_flags = current_flags;
     case (opcode)
       `ADD: begin
@@ -164,6 +178,7 @@ next_flags[7] : Zero  Flag (Z)
       end
       default: $display("No operation");
     endcase
+  end
   end
 endmodule
 
