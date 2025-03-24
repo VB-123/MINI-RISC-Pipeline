@@ -8,8 +8,10 @@ module ALU (
     input wire [3:0] bit_position,  // set the bit in the postion given by this input
     input wire [7:0] immediate, 
     input wire [15:0] current_flags,
+    input wire [2:0] rd,  // destination register
     output reg [15:0] result_0,  // to the data_in_0
     output reg [15:0] result_1,  // to the data_in_1
+    output reg alu_en_out,
     output reg [15:0] next_flags
 );
 `include "parameters.v"
@@ -48,21 +50,43 @@ next_flags[7] : Zero  Flag (Z)
     end
   endtask
 
+  reg [15:0] last_lbh_result;
+  reg [2:0] last_lbh_reg;
+  reg lbh_pending;
+
+  always @* begin
+      if (opcode == `LBH) begin
+        last_lbh_result <= result_0;
+        last_lbh_reg <= rd;
+        lbh_pending <= 1'b1;
+      end
+      else if (lbh_pending && !(opcode == `LBL && rd == last_lbh_reg)) begin
+        lbh_pending <= 1'b0;
+      end
+  end
+
   always @* begin
     if (!alu_en) begin
     // Non-ALU operations
       case (opcode)
-        `LBL: result_0 = {operand_1[15:8], immediate};  // Immediate to lower byte
+        `LBL: begin
+          if (lbh_pending && rd == last_lbh_reg)
+            result_0 = {last_lbh_result[15:8], immediate};
+          else
+            result_0 = {operand_1[15:8], immediate};
+        end
         `LBH: result_0 = {immediate, operand_1[7:0]};  // Immediate to upper byte
         `MOV: result_0 = operand_1;             // Move from rs1 to rd
         default: result_0 = 16'h0000;           // Default case
       endcase
       result_1 = 16'h0000;
       next_flags = current_flags;
+      alu_en_out = 1'b0;
     end
     // Default flag values
     else begin
-    next_flags = current_flags;
+    // next_flags = current_flags;
+    alu_en_out = 1'b1;
     case (opcode)
       `ADD: begin
         add_temp = {1'b0, operand_1} + {1'b0, operand_2};
@@ -151,7 +175,7 @@ next_flags[7] : Zero  Flag (Z)
       end
 
       `SETB: begin
-        result_0 = operand_1 | (16'b1 << bit_position);
+        result_0 = operand_1 | (16'h0001 << bit_position);
         set_common_flags(result_0);
       end
 
@@ -174,7 +198,7 @@ next_flags[7] : Zero  Flag (Z)
       end
 
       `CPLF: begin 
-        next_flags[bit_position] = ~next_flags[bit_position];
+        next_flags[bit_position] = ~current_flags[bit_position];
       end
       default: $display("No operation");
     endcase
@@ -183,16 +207,18 @@ next_flags[7] : Zero  Flag (Z)
 endmodule
 
 module Flag_Register(
-  input wire clk,
   input wire reset,
+  input wire flag_reg_en,
   input wire [15:0] next_flags,
   output reg [15:0] current_flags
 );
-  always @(posedge clk or posedge reset) begin
+  always @* begin
     if (reset) begin
       current_flags <= 16'b0;
-    end else begin
-      current_flags <= next_flags;
-    end
+    end 
+    else if (flag_reg_en)
+      begin
+        current_flags <= next_flags;
+      end
   end
 endmodule

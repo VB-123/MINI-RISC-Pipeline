@@ -9,7 +9,7 @@ module reg_file (
     
     // Write ports
     input wire reg_write_en,           // Enable writing to registers
-    input wire [1:0] write_mode,       // 00: no write, 01: write low byte, 10: write high byte, 11: write full word
+    input wire [1:0] write_mode,       // 00: no write, 01: write through port 1, 11: write through port 1 and port 2
     input wire [2:0] reg_write_addr_0, // Address for first register to write
     input wire [2:0] reg_write_addr_1, // Address for second register to write (for high byte in multi-register ops)
     input wire [15:0] data_in_0,       // Data to write to first register
@@ -34,12 +34,10 @@ module reg_file (
     end
    else if (reg_write_en) begin
         case (write_mode)
-            2'b01: registers[reg_write_addr_0][7:0] <= data_in_0[7:0];   // Write low byte
-            2'b10: registers[reg_write_addr_0][15:8] <= data_in_0[15:8]; // Write high byte
+            2'b01: registers[reg_write_addr_0] <= data_in_0;   // Write low byte
             2'b11: begin
-                registers[reg_write_addr_0] <= data_in_0;                 // Write full word to first register
-                if (reg_write_addr_1 != 3'b000)                          // If second register specified
-                    registers[reg_write_addr_1] <= data_in_1;             // Write to second register
+                registers[reg_write_addr_0] <= data_in_0; 
+                registers[reg_write_addr_1] <= data_in_1; 
             end
             default: ; // No write
         endcase

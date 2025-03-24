@@ -174,6 +174,7 @@ module EW_Register (
     // Control signals from Execute
     input wire read_write_in,
     input wire [1:0] write_mode_in,
+    input wire flag_reg_en_in,
     input wire mem_to_reg_in,
     input wire mem_write_in,
     
@@ -195,6 +196,7 @@ module EW_Register (
     // Control signals to Writeback
     output reg read_write_out,
     output reg [1:0] write_mode_out,
+    output reg flag_reg_en_out,
     output reg mem_to_reg_out
 );
 
@@ -215,6 +217,7 @@ module EW_Register (
             // Control signals
             read_write_out <= 1'b0;
             write_mode_out <= 2'b00;
+            flag_reg_en_out <= 1'b0;
             mem_to_reg_out <= 1'b0;
         end
         else begin
@@ -235,6 +238,7 @@ module EW_Register (
             // Control signals
             read_write_out <= read_write_in;
             write_mode_out <= write_mode_in;
+            flag_reg_en_out <= flag_reg_en_in;
             mem_to_reg_out <= mem_to_reg_in;
         end
     end

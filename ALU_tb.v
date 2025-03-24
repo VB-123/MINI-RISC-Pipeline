@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "parameters.v"
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: Vasanthi 
@@ -19,9 +20,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 module ALU_tb();
-    `include "parameters.v"
     // Inputs
-    reg clk;                    // Add clock
     reg reset;
     reg [4:0] opcode;
     reg [15:0] operand_1;
@@ -42,10 +41,12 @@ module ALU_tb();
 
     // Instantiate the ALU
     ALU alu (
+        .alu_en(1'b1),
         .opcode(opcode),
         .operand_1(operand_1),
         .operand_2(operand_2),
         .bit_position(bit_position),
+        .immediate(8'h0),
         .current_flags(current_flags),
         .result_0(result_0),
         .result_1(result_1),
@@ -84,55 +85,55 @@ module ALU_tb();
 			      input [15:0] test_op1; input [15:0] test_op2; input [3:0] test_bit_pos;) */
         // Test ADD operation
         // Normal addition
-        test_case("ADD - Normal", ADD, 16'd10, 16'd20, 4'd0);
+        test_case("ADD - Normal", `ADD, 16'd10, 16'd20, 4'd0);
         // Addition with carry
-        test_case("ADD - Carry", ADD, 16'hFFFF, 16'd1, 4'd0);
+        test_case("ADD - Carry", `ADD, 16'hFFFF, 16'd1, 4'd0);
         // Addition with overflow
-        test_case("ADD - Overflow", ADD, 16'h7FFF, 16'h7FFF, 4'd0);
+        test_case("ADD - Overflow", `ADD, 16'h7FFF, 16'h7FFF, 4'd0);
         
         // Test MUL operation
-        test_case("MUL - Normal", MUL, 16'd10, 16'd20, 4'd0);
-        test_case("MUL - Large", MUL, 16'hFFFF, 16'h2, 4'd0);
+        test_case("MUL - Normal", `MUL, 16'd10, 16'd20, 4'd0);
+        test_case("MUL - Large", `MUL, 16'hFFFF, 16'h2, 4'd0);
         
         // Test SUB operation
-        test_case("SUB - Normal", SUB, 16'd20, 16'd10, 4'd0);
-        test_case("SUB - Negative", SUB, 16'd40, 16'd29, 4'd0);
+        test_case("SUB - Normal", `SUB, 16'd20, 16'd10, 4'd0);
+        test_case("SUB - Negative", `SUB, 16'd40, 16'd29, 4'd0);
         
         // Test DIV operation
-        test_case("DIV - Normal", DIV, 16'd20, 16'd5, 4'd0);
-        test_case("DIV - By Zero", DIV, 16'd20, 16'd0, 4'd0);
+        test_case("DIV - Normal", `DIV, 16'd20, 16'd5, 4'd0);
+        test_case("DIV - By Zero", `DIV, 16'd20, 16'd0, 4'd0);
         
         // Test logical operations
-        test_case("NOT", NOT, 16'hAAAA, 16'd0, 4'd0);
-        test_case("AND", AND, 16'hAAAA, 16'h5555, 4'd0);
-        test_case("OR", OR, 16'hAAAA, 16'h5555, 4'd0);
-        test_case("XOR", XOR, 16'hAAAA, 16'h5555, 4'd0);
+        test_case("NOT", `NOT, 16'hAAAA, 16'd0, 4'd0);
+        test_case("AND", `AND, 16'hAAAA, 16'h5555, 4'd0);
+        test_case("OR", `OR, 16'hAAAA, 16'h5555, 4'd0);
+        test_case("XOR", `XOR, 16'hAAAA, 16'h5555, 4'd0);
         
         // Test INC operation
-        test_case("INC - Normal", INC, 16'd10, 16'd0, 4'd0);
-        test_case("INC - Overflow", INC, 16'hFFFF, 16'd0, 4'd0);
+        test_case("INC - Normal", `INC, 16'd10, 16'd0, 4'd0);
+        test_case("INC - Overflow", `INC, 16'hFFFF, 16'd0, 4'd0);
         
         // Test CMP operation
-        test_case("CMP - Equal", CMP, 16'd10, 16'd10, 4'd0);
-        test_case("CMP - Greater", CMP, 16'd20, 16'd10, 4'd0);
-        test_case("CMP - Less", CMP, 16'd10, 16'd20, 4'd0);
+        test_case("CMP - Equal", `CMP, 16'd10, 16'd10, 4'd0);
+        test_case("CMP - Greater", `CMP, 16'd20, 16'd10, 4'd0);
+        test_case("CMP - Less", `CMP, 16'd10, 16'd20, 4'd0);
         
         // Test rotation operations
-        test_case("RR", RR, 16'hAAAA, 16'd0, 4'd0);
-        test_case("RL", RL, 16'hAAAA, 16'd0, 4'd0);
+        test_case("RR", `RR, 16'hAAAA, 16'd0, 4'd0);
+        test_case("RL", `RL, 16'hAAAA, 16'd0, 4'd0);
         
         // Test bit operations
-        test_case("SETB", SETB, 16'h0000, 16'd0, 4'd8);
-        test_case("CLRB", CLRB, 16'hFFFF, 16'd0, 4'd8);
-        test_case("CPLB", CPLB, 16'hFFFF, 16'd0, 4'd8);
+        test_case("SETB", `SETB, 16'h0000, 16'd0, 4'd8);
+        test_case("CLRB", `CLRB, 16'hFFFF, 16'd0, 4'd8);
+        test_case("CPLB", `CPLB, 16'hFFFF, 16'd0, 4'd8);
         // Test setting different flag bits
-        test_case("SETF - Carry Flag", SETF, 16'h0000, 16'h0000, 4'd0);
-        test_case("SETF - Zero Flag", SETF, 16'h0000, 16'h0000, 4'd7);
-        test_case("SETF - Negative Flag", SETF, 16'h0000, 16'h0000, 4'd6);
-        test_case("SETF - General Purpose Flag", SETF, 16'h0000, 16'h0000, 4'd4);
+        test_case("SETF - Carry Flag", `SETF, 16'h0000, 16'h0000, 4'd0);
+        test_case("SETF - Zero Flag", `SETF, 16'h0000, 16'h0000, 4'd7);
+        test_case("SETF - Negative Flag", `SETF, 16'h0000, 16'h0000, 4'd6);
+        test_case("SETF - General Purpose Flag", `SETF, 16'h0000, 16'h0000, 4'd4);
         
-        test_case("CLRF - Carry Flag", CLRF, 16'h0000, 16'h0000, 4'd0);
-        test_case("CPLF - Carry Flag",  CPLF, 16'h0000, 16'h0000, 4'd0);
+        test_case("CLRF - Carry Flag", `CLRF, 16'h0000, 16'h0000, 4'd0);
+        test_case("CPLF - Carry Flag",  `CPLF, 16'h0000, 16'h0000, 4'd0);
 
         $display("\n=== Test Summary ===");
         if (num_failures == 0)
@@ -163,7 +164,7 @@ module ALU_tb();
             bit_position = test_bit_pos;
             @(posedge clk);  // Wait for flag register to update
             case(test_opcode)
-                ADD: begin // ADD
+                `ADD: begin // ADD
                     if(result_0 !== test_op1 + test_op2) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -174,7 +175,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                MUL: begin // MUL
+                `MUL: begin // MUL
                     expected_mul = test_op1 * test_op2;
                     if(result_0 !== expected_mul[15:0] || result_1 !== expected_mul[31:16]) begin
                         failed = 1;
@@ -185,7 +186,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                SUB: begin // SUB
+                `SUB: begin // SUB
                     if(result_0 !== test_op1 - test_op2) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -196,7 +197,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                DIV: begin // DIV
+                `DIV: begin // DIV
                     if(test_op2 != 0) begin
                         expected_div = test_op1 / test_op2;
                         expected_mod = test_op1 % test_op2;
@@ -215,7 +216,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                NOT: begin // NOT
+                `NOT: begin // NOT
                     if(result_0 !== ~test_op1) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -225,7 +226,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                AND: begin // AND
+                `AND: begin // AND
                     if(result_0 !== (test_op1 & test_op2)) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -235,7 +236,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                OR: begin // OR
+                `OR: begin // OR
                     if(result_0 !== (test_op1 | test_op2)) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -245,7 +246,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                XOR: begin // XOR
+                `XOR: begin // XOR
                     if(result_0 !== (test_op1 ^ test_op2)) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -255,7 +256,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                INC: begin // INC
+                `INC: begin // INC
                     if(result_0 !== test_op1 + 16'h0001) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -266,7 +267,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                CMP: begin // CMP
+                `CMP: begin // CMP
                     if((test_op1 == test_op2 && !next_flags[3]) ||
                        (test_op1 > test_op2 && !next_flags[2]) ||
                        (test_op1 < test_op2 && !next_flags[0])) begin
@@ -282,7 +283,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                RR: begin // RR
+                `RR: begin // RR
                     if(result_0 !== {test_op1[0], test_op1[15:1]}) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -292,7 +293,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                RL: begin // RL
+                `RL: begin // RL
                     if(result_0 !== {test_op1[14:0], test_op1[15]}) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -302,7 +303,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                SETB: begin // SETB
+                `SETB: begin // SETB
                     if(result_0 !== (test_op1 | (16'b1 << test_bit_pos))) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -312,7 +313,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                CLRB: begin // CLRB
+                `CLRB: begin // CLRB
                     if(result_0 !== (test_op1 & ~(16'b1 << test_bit_pos))) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -322,7 +323,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                CPLB: begin // CPLB
+                `CPLB: begin // CPLB
                     if(result_0 !== (test_op1 ^ (16'b1 << test_bit_pos))) begin
                       failed = 1;
                       $display("\nFAILURE in %s:", test_name);
@@ -332,7 +333,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
 
-                SETF: begin // SETF
+                `SETF: begin // SETF
                     if(!next_flags[test_bit_pos]) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -342,7 +343,7 @@ module ALU_tb();
                     $display("Flag register: %h", next_flags);
                 end
                 
-                CLRF: begin
+                `CLRF: begin
                   if(next_flags[test_bit_pos]) begin
                     failed = 1;
                     $display("\nFAILURE in %s:", test_name);
@@ -352,7 +353,7 @@ module ALU_tb();
                   $display("Flag register: %h", next_flags);
                 end
 
-                CPLF: begin
+                `CPLF: begin
                     if(next_flags[test_bit_pos] === current_flags[test_bit_pos]) begin
                         failed = 1;
                         $display("\nFAILURE in %s:", test_name);
@@ -368,10 +369,10 @@ module ALU_tb();
         end
     endtask
     
-    // Wave dump
+    /* // Wave dump
     initial begin
         $dumpfile("alu_test.vcd");
         $dumpvars(0, ALU_tb);
-    end
+    end */
     
 endmodule
