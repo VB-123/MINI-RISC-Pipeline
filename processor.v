@@ -38,6 +38,9 @@ module pipelined_processor;
   reg clk;
   reg rst;
 
+  // Register to store previous ALU result
+  reg [15:0] prev_result_E;
+
   // =====================
   // Processor components
   // =====================
@@ -112,7 +115,8 @@ module pipelined_processor;
   wire [10:0] branch_addr_E;       // Branch address
   wire [15:0] next_flags_E;        // Next flags from ALU
   wire [15:0] alu_operand_2;       // ALU operand 2
-
+  wire flush_EW;                   // Flush signal for execute stage
+  wire stall_EW;                   // Stall signal for execute stage
   // Write back Stage wires
   wire [10:0] mem_addr_W;
   wire [15:0] mem_write_data_W;
@@ -146,12 +150,10 @@ module pipelined_processor;
 
   
   // Forwarding logic
-  // Corrected forwarding MUX logic
-  assign fwd_A = (forward_A == 2'b10) ? reg_write_data_0_W :  // From Writeback stage
-                reg_data_1_E;                               // Normal register value
-
-  assign fwd_B = (forward_B == 2'b10) ? reg_write_data_0_W :  // From Writeback stage
-                  reg_data_2_E;                               // Normal register value
+  assign fwd_A = (forward_A == 2'b10) ? reg_write_data_0_W : reg_data_1_E;    
+  assign fwd_B = (forward_B == 2'b10) ? 
+               (stall_EW ? prev_result_E : reg_write_data_0_W) : 
+               reg_data_2_E;
   assign alu_operand_2 = (alu_src_E) ? {8'h00, immediate_E} : fwd_B;
 assign mem_write_data_W = reg_data_2_E; // Data to write to memory
 assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
@@ -321,10 +323,12 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .source_reg2_in(rs2_E), // From DE Register, rs1_E (checked)
     .alu_result_0_in(alu_result_0_E), // From ALU Execute stage (checked)
     .alu_result_1_in(alu_result_1_E), // From ALU Execute stage (checked)
+    .prev_alu_result_0(prev_result_E), 
     .mem_data_in(mem_data_E), // From mem Execute stage, data read out of memory (checked)
     .flags_in(next_flags_E), // From ALU Execute stage (checked)
     .branch_addr_in(branch_addr_E), // To Branch Register (checked)
     // Controls
+    .stall_E(stall_EW), // From hazard unit 
     .read_write_in(read_write_E), // From DE Register (checked)
     .write_mode_in(write_mode_E), // From Control Unit (checked)
     .flag_reg_en_in(flag_reg_en_E), // From ALU (trial run)
@@ -332,6 +336,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .mem_write_in(mem_write_E), // From DE Register (checked)
 
     // Outputs
+    .flush_E(flush_EW), // from hazard Unit (checked)
     .opcode_out(opcode_W), // To Writeback (unused)
     .reg_write_addr_out(reg_write_addr_W), // To Register file (checked)
     .source_reg1_out(rs1_W), // To Hazard Unit
@@ -362,6 +367,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 
   HAZARD_Unit hazard_unit(
   // Inputs
+  .clk(clk),
   .alu_en(ALU_EN_D),                // From DE Register
   .opcode_D(opcode_D),              // From Decode stage
   .opcode_E(opcode_E),              // From Execute stage
@@ -377,13 +383,16 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   .mem_read_E(mem_read_E),          // From Control Unit via DE Register
   .branch(branch_D),              // From Control Unit
   .jump_hzd(jump_D),                    // Connect to control_unit
+  .reg_write_D(reg_write_D),         // From Control Unit via DE Register
   .reg_write_E(write_mode_E [0]),    // From Control Unit via DE Register
   .reg_write_W(write_mode_W[0]),    // From Control Unit via EW Register
   // Outputs
   .stall_F(stall_FD),                // To FD Register
   .stall_D(stall_DE),                // To DE Register
+  .stall_E(stall_EW),                // To EW Register
   .flush_F(flush_FD),                // To FD Register
   .flush_D(flush_DE),                // To DE Register
+  .flush_E(flush_EW),                // To EW Register
   .forward_A(forward_A),            // To forwarding logic
   .forward_B(forward_B)             // To forwarding logic
 );
@@ -412,6 +421,11 @@ initial begin
   instruction_mem[3] = {`LBH, `REG1, 8'h01};
   instruction_mem[4] = {`LBL, `REG1, 8'h01};
   instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
+  instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
+  instruction_mem[7] = {`NOP, 11'b0};
+  instruction_mem[8] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
+  instruction_mem[9] = {`ADD, `REG5, `REG1, `REG4, 2'b0};
+  instruction_mem[10] = {`ADD, `REG6, `REG3, `REG4, 2'b0}; // This messes you up
   
   // Wait for reset
   repeat(2) @(posedge clk);
@@ -419,11 +433,11 @@ initial begin
   rst = 1'b0;
   
   // Monitor pipeline stages
-  repeat(13) @(posedge clk) begin
+  repeat(16) @(posedge clk) begin
     $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D);
-    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, next_flags_in = %b, next_flags_out = %b, flag_reg_en_E = %b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, next_flags_E, next_flags_W, flag_reg_en_E);
+    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
   end
   
@@ -433,10 +447,21 @@ initial begin
   $display("R0 = %h", reg_file_unit.registers[0]);
   $display("R1 = %h", reg_file_unit.registers[1]);
   $display("R2 = %h", reg_file_unit.registers[2]);
-  // $display("R3 = %h", reg_file_unit.registers[3]);
-  // $display("R4 = %h", reg_file_unit.registers[4]);
+  $display("R3 = %h", reg_file_unit.registers[3]);
+  $display("R4 = %h", reg_file_unit.registers[4]);
+  $display("R5 = %h", reg_file_unit.registers[5]);
+  $display("R6 = %h", reg_file_unit.registers[6]);
   $display("\nFlags = %b", current_flags_D);
   
   $finish;
 end
+
+always @(posedge clk or posedge rst) begin
+  if (rst) begin
+    prev_result_E <= 16'b0;
+  end else if (flush_EW) begin  // Only update when not stalled
+    prev_result_E <= alu_result_0_E;
+  end
+end
+
 endmodule

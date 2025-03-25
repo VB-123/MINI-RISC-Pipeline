@@ -100,6 +100,9 @@ module control_unit (
         write_mode = 2'b11;
         alu_op = 1'b0;
       end
+
+      `NOP: begin
+      end
       
       // I/O operations
       `MOVOUT, `MOVIN, `MOVB: begin

@@ -26,6 +26,7 @@
 `define LBL 5'b10110
 `define LBH 5'b10111
 `define MOV 5'b11000
+`define NOP 5'b11001
 `define MOVOUT 5'b11100
 `define MOVIN 5'b11101
 `define MOVB 5'b11110

@@ -167,6 +167,7 @@ module EW_Register (
     input wire [2:0] source_reg2_in, // rs2_E
     input wire [15:0] alu_result_0_in,
     input wire [15:0] alu_result_1_in,
+    input wire [15:0] prev_alu_result_0,
     input wire [15:0] mem_data_in,
     input wire [15:0] flags_in,
     input wire [10:0] branch_addr_in,
@@ -177,6 +178,8 @@ module EW_Register (
     input wire flag_reg_en_in,
     input wire mem_to_reg_in,
     input wire mem_write_in,
+    input wire flush_E,
+    input wire stall_E,
     
     // Outputs to Writeback stage
     output reg [4:0] opcode_out,
@@ -220,7 +223,26 @@ module EW_Register (
             flag_reg_en_out <= 1'b0;
             mem_to_reg_out <= 1'b0;
         end
-        else begin
+        else if (flush_E) begin
+            opcode_out <= 5'b0;
+            reg_write_addr_out <= 3'b0;
+            source_reg1_out <= 3'b0;
+            source_reg2_out <= 3'b0;
+            reg_write_data_0_out <= 16'b0;
+            reg_write_data_1_out <= 16'b0;
+            flags_out <= 16'b0;
+            mem_addr_out <= 11'b0;
+            mem_write_data_out <= 16'b0;
+            mem_write_out <= 1'b0;
+            branch_addr_out <= 11'b0;
+            
+            // Control signals
+            read_write_out <= 1'b0;
+            write_mode_out <= 2'b00;
+            flag_reg_en_out <= 1'b0;
+            mem_to_reg_out <= 1'b0;
+        end
+        else if (!stall_E) begin
             opcode_out <= opcode_in;
             reg_write_addr_out <= reg_write_addr_in;
             source_reg1_out <= source_reg1_in;
