@@ -38,7 +38,7 @@ module program_counter (
 
   always @(posedge clk or posedge rst) begin
     if (rst) begin
-      current_addr <= 11'b0; // Explicitly initialize to 0 on reset
+      current_addr <= 11'b0;
       $display("PC RESET to 0");
     end else begin
       $display("PC Module: inc=%b, branch_en=%b, halt=%b, cycle=%d", 

@@ -1,0 +1,161 @@
+control_unit control_unit (
+    // Inputs
+    .opcode(opcode_D), // From DE Register (checked)
+    .flag_reg_values(current_flags_D),
+    .flag_index(bit_pos_D),
+    // Outputs
+    .alu_src(alu_src_D), // To DE Register (checked)
+    .read_write(read_write_D), // To Register file (checked)
+    .mem_write(mem_write_D), // To Data Memory, via EW Register (checked)
+    .mem_to_reg(mem_to_reg_D), // To EW Register (checked)
+    .branch_en(branch_en_D), // To Program Counter (checked)
+    .inc_pc(inc_pc_D), // To DE Register (checked)
+    .jump(jump_D), // To Hazard Unit (checked)
+    .mem_read(mem_addr_D), // To Data Memory (checked)
+    .alu_op(ALU_EN_D), // To DE Register (checked)
+    .write_mode(write_mode_D) // To Register file via E/W Register (checked)
+  );
+
+DE_Register DE_Reg (
+    // Inputs
+    .clk(clk),
+    .reset(rst),
+    .stall_D(stall_DE), // From Hazard Unit (checked)
+    .flush_D(flush_DE), // From Hazard Unit (checked)
+    .opcode_in(opcode_D), // From FD Register (checked)
+    .reg_write_addr_in(rd_D), // From FD Register (checked)
+    .source_reg1_in(rs1_D), // From FD Register (checked)
+    .source_reg2_in(rs2_D), // From FD Register (checked)
+    .reg_data_1_in(reg_data_1_D), // From Register File (checked)
+    .reg_data_2_in(reg_data_2_D),  // From Register File (checked)
+    .immediate_in(immediate_D), // From FD Register (checked)
+    .bit_position_in(bit_pos_D), // From FD Register (checked)
+    .pc_in(PC_D), // From FD Register (checked)
+    .flags_in(current_flags_D), // From Flag Register (checked)
+    .branch_addr_in(branch_addr_in), // From FD Register (checked)
+
+    // Control signals inputs
+    .alu_src_in(alu_src_D),
+    .reg_write_in(write_mode_D),
+    .mem_write_in(mem_write_D),
+    .mem_to_reg_in(mem_to_reg_D),
+    .mem_read_in(mem_addr_D),
+    .read_write_in(read_write_D),
+    .alu_op_in(ALU_EN_D), // ALU enable signal input (checked)
+    .branch_en_in(branch_en_D),           // From Control Unit
+    // Outputs for control signals
+    .alu_src_out(alu_src_E),
+    .read_write_out(read_write_E),
+    .mem_write_out(mem_write_E),
+    .mem_to_reg_out(mem_to_reg_E),
+    .mem_read_out(mem_read_E),
+    .write_mode_out(write_mode_E),
+
+    // Outputs for data
+    .opcode_out(opcode_E),
+    .reg_write_addr_out(reg_write_addr_E),
+    .source_reg1_out(rs1_E), 
+    .source_reg2_out(rs2_E),
+    .reg_data_1_out(reg_data_1_E),
+    .reg_data_2_out(reg_data_2_E),
+    .immediate_out(immediate_E),
+    .bit_position_out(bit_position_E),
+    .pc_out(PC_E),
+    .flags_out(flags_E),
+    .branch_addr_out(branch_addr_E),
+    .mem_read_addr_out(mem_addr_E),
+    .alu_op_out(ALU_EN_E), // To ALU (checked)
+    .branch_en_out(branch_en_E)
+  );
+
+  ALU alu(
+    // Inputs
+    .alu_en(ALU_EN_E), // From DE Register(checked)
+    .opcode(opcode_E), // From DE Register (checked)
+    .operand_1(fwd_A), // From DE Register (checked)
+    .operand_2(alu_operand_2), // From DE Register (checked)
+    .bit_position(bit_position_E), // From DE Register (checked)
+    .immediate(immediate_E), // From DE Register (checked)
+    .current_flags(flags_E), // From DE Register (checked)
+    .rd(reg_write_addr_E), // From DE Register (checked)
+    // Outputs
+    .result_0(alu_result_0_E), // To E/W Register (checked)
+    .result_1(alu_result_1_E), // To E/W Register (checked) 
+    .alu_en_out(flag_reg_en_E), // To E/W Register (checked)
+    .next_flags(next_flags_E)  // To E/W Register (checked)  
+    );
+
+
+  EW_Register EW_Reg (
+    // Inputs
+    .clk(clk),
+    .reset(rst),
+    .opcode_in(opcode_E), // From DE Register (checked)
+    .reg_write_addr_in(reg_write_addr_E), // From DE Register, rd_E (checked)
+    .source_reg1_in(rs1_E), // From DE Register, rs1_E (checked)
+    .source_reg2_in(rs2_E), // From DE Register, rs1_E (checked)
+    .alu_result_0_in(alu_result_0_E), // From ALU Execute stage (checked)
+    .alu_result_1_in(alu_result_1_E), // From ALU Execute stage (checked)
+    .prev_alu_result_0(prev_result_E), 
+    .mem_data_in(mem_data_E), // From mem Execute stage, data read out of memory (checked)
+    .flags_in(next_flags_E), // From ALU Execute stage (checked)
+    .branch_addr_in(branch_addr_E), // To Branch Register (checked)
+    // Controls
+    .stall_E(stall_EW), // From hazard unit 
+    .read_write_in(read_write_E), // From DE Register (checked)
+    .write_mode_in(write_mode_E), // From Control Unit (checked)
+    .flag_reg_en_in(flag_reg_en_E), // From ALU (trial run)
+    .mem_to_reg_in(mem_to_reg_E), // From DE Register (checked)
+    .mem_write_in(mem_write_E), // From DE Register (checked)
+
+    // Outputs
+    .flush_E(flush_EW), // from hazard Unit (checked)
+    .opcode_out(opcode_W), // To Hazard unit (checked)
+    .reg_write_addr_out(reg_write_addr_W), // To Register file (checked)
+    .source_reg1_out(rs1_W), // To Hazard Unit
+    .source_reg2_out(rs2_W), // To Hazard Unit
+    .reg_write_data_0_out(reg_write_data_0_W), // To Register File (checked)
+    .reg_write_data_1_out(reg_write_data_1_W), // To Register File (checked)
+    .read_write_out(read_write_W), // To Register File (checked)
+    .write_mode_out(write_mode_W), // To Register File (checked)
+    .flag_reg_en_out(flag_reg_en_W), // To flag register (trial run)
+    .flags_out(next_flags_W), // To Flag Register (checked)
+    .branch_addr_out(branch_addr_W), // To Branch Register (checked)
+    .mem_addr_out(mem_addr_W), // To Data Memory (checked)
+    .mem_write_data_out(mem_write_data_W), // To Data Memory (checked)
+    .mem_write_out(mem_write_W), // To Data Memory
+    .mem_to_reg_out(mem_to_reg_W) // To Register File (checked)
+  );
+HAZARD_Unit hazard_unit(
+  // Inputs
+  .clk(clk),
+  .alu_en_in(ALU_EN_D),                // From DE Register
+  .opcode_D(opcode_D),              // From Decode stage
+  .opcode_E(opcode_E),              // From Execute stage
+  .opcode_W(opcode_W),
+  .rd_D(rd_D),                      // From Decode stage
+  .source_reg1_D(rs1_D),                    // From Decode stage
+  .source_reg2_D(rs2_D),                    // From Decode stage
+  .rd_E(reg_write_addr_E),          // From Execute stage
+  .source_reg1_E(rs1_E),                    // From Execute stage
+  .source_reg2_E(rs2_E),                    // From Execute stage
+  .rd_W(reg_write_addr_W),          // From Writeback stage
+  .source_reg1_W(rs1_W),                    // From Writeback stage
+  .source_reg2_W(rs2_W),                    // From Writeback stage
+  .mem_read_E(mem_read_E),          // From Control Unit via DE Register
+  .branch_en(branch_en_E),              // From Control Unit
+  .jump_hzd(jump_D),                    // Connect to control_unit
+  .reg_write_D(reg_write_D),         // From Control Unit via DE Register
+  .reg_write_E(write_mode_E [0]),    // From Control Unit via DE Register
+  .reg_write_W(write_mode_W[0]),    // From Control Unit via EW Register
+  // Outputs
+  .stall_F(stall_FD),                // To FD Register
+  .stall_D(stall_DE),                // To DE Register
+  .stall_E(stall_EW),                // To EW Register
+  .flush_F(flush_FD),                // To FD Register
+  .flush_D(flush_DE),                // To DE Register
+  .flush_E(flush_EW),                // To EW Register
+  .forward_A(forward_A),            // To forwarding logic
+  .forward_B(forward_B),             // To forwarding logic
+  .alu_en_out(alu_en_hzd)  // Unconnected
+);

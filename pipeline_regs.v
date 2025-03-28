@@ -36,7 +36,7 @@ module DE_Register (
     input wire stall_D,
     input wire flush_D,
     
-    // Inputs to Decode stage
+    // Inputs from Decode stage
     input wire [4:0] opcode_in,
     input wire [2:0] reg_write_addr_in, // rd_D
     input wire [2:0] source_reg1_in, // rs1_D
@@ -57,7 +57,10 @@ module DE_Register (
     input wire mem_read_in,
     input wire read_write_in,
     input wire alu_op_in,  // ALU enable signal input
-    
+    input wire branch_en_in,
+    input wire branch_flush_F,
+    input wire branch_flush_D,
+
     // Outputs to Execute stage
     output reg [4:0] opcode_out,
     output reg [2:0] reg_write_addr_out, //rd_E
@@ -79,7 +82,8 @@ module DE_Register (
     output reg mem_to_reg_out,
     output reg [1:0] write_mode_out,
     output reg mem_read_out,
-    output reg alu_op_out  // ALU enable signal output
+    output reg alu_op_out,  // ALU enable signal output
+    output reg branch_en_out
 );
 
     always @(posedge clk or posedge reset) begin
@@ -105,6 +109,7 @@ module DE_Register (
             mem_to_reg_out <= 1'b0;
             write_mode_out <= 2'b00;
             alu_op_out <= 1'b0;  // Reset ALU enable signal
+            branch_en_out <= 1'b0;
         end
         else if (flush_D) begin
             opcode_out <= 5'b0;
@@ -127,7 +132,8 @@ module DE_Register (
             mem_write_out <= 1'b0;
             mem_to_reg_out <= 1'b0;
             write_mode_out <= 2'b00;
-            alu_op_out <= 1'b0;  // Flush ALU enable signal
+            alu_op_out <= 1'b0;
+            branch_en_out <= 1'b0;
         end
         else if (!stall_D) begin
             opcode_out <= opcode_in;
@@ -150,7 +156,8 @@ module DE_Register (
             mem_to_reg_out <= mem_to_reg_in;
             write_mode_out <= reg_write_in;
             read_write_out <= read_write_in;
-            alu_op_out <= alu_op_in;  // Pass through ALU enable signal
+            alu_op_out <= alu_op_in;
+            branch_en_out <= branch_en_in;
         end
     end
 endmodule

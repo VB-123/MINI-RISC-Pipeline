@@ -1,7 +1,7 @@
 `ifndef _PARAMETERS_V_
 `define _PARAMETERS_V_
 
-`define ADD 5'b00000
+`define NOP 5'b00000
 `define MUL 5'b00001
 `define SUB 5'b00010
 `define DIV 5'b00011
@@ -26,7 +26,7 @@
 `define LBL 5'b10110
 `define LBH 5'b10111
 `define MOV 5'b11000
-`define NOP 5'b11001
+`define ADD 5'b11001
 `define MOVOUT 5'b11100
 `define MOVIN 5'b11101
 `define MOVB 5'b11110

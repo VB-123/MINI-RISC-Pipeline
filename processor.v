@@ -28,11 +28,11 @@
 // 5. ALU operates only on registers. It does not take immediate values.
 // 6. LBL, LBH, MOV are non-ALU operations. They take the path through the ALU, but the ALU is disabled.
 // 
-// TODO: Fix the hazard unit and Forwarding unit and IO Ports
-// TODO: Addproper stalling for the dependencies. Test branch operations and bit operations.
+// TODO: Make IO Ports
+// TODO: Test branch operations. Flush_D not activated during branching. Also, alu_en_d is always ON after branching.
 //////////////////////////////////////////////////////////////////////////////////
 
-module pipelined_processor;
+module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as ports
   
   // Special registers
   reg clk;
@@ -83,7 +83,7 @@ module pipelined_processor;
   wire [1:0] write_mode_D;
   wire mem_write_D;
   wire mem_to_reg_D;
-  wire branch_D;
+  wire branch_en_D;
   wire [10:0] branch_addr_in;
   wire inc_pc_D;                   // Increment PC signal from control unit
 
@@ -113,6 +113,7 @@ module pipelined_processor;
   wire [15:0] next_flags_W;        // Next flags from ALU
   wire mem_addr_D;                 // Memory address from decode stage
   wire [10:0] branch_addr_E;       // Branch address
+  wire branch_en_E;
   wire [15:0] next_flags_E;        // Next flags from ALU
   wire [15:0] alu_operand_2;       // ALU operand 2
   wire flush_EW;                   // Flush signal for execute stage
@@ -135,6 +136,7 @@ module pipelined_processor;
   wire [10:0] branch_addr_W;
   wire [15:0] alu_result_0_E, alu_result_1_E;
   wire ALU_EN_D;
+  wire alu_en_hzd;
 
   // Assignments for fetch stage
   assign instruction_F = instruction_mem[PC_F];
@@ -150,8 +152,8 @@ module pipelined_processor;
 
   
   // Forwarding logic
-  assign fwd_A = (forward_A == 2'b10) ? reg_write_data_0_W : reg_data_1_E;    
-  assign fwd_B = (forward_B == 2'b10) ? 
+  assign fwd_A = (stall_EW || flush_EW)? reg_data_1_E: (forward_A == 2'b10) ? reg_write_data_0_W : reg_data_1_E;    
+  assign fwd_B =  (stall_EW || flush_EW)? reg_data_2_E: (forward_B == 2'b10) ? 
                (stall_EW ? prev_result_E : reg_write_data_0_W) : 
                reg_data_2_E;
   assign alu_operand_2 = (alu_src_E) ? {8'h00, immediate_E} : fwd_B;
@@ -169,7 +171,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 
     // Controls
     .inc(inc_pc_D & ~stall_FD), // Use stall_F to control increment (checked)
-    .branch_en(branch_D),      // Control Unit output (checked)
+    .branch_en(branch_en_E),      // Control Unit output via EW register (checked)
     .halt(1'b0),               // Hazard Unit output? (unchecked)
     .branch_addr(branch_addr_D), // Branch Register (checked)
 
@@ -195,7 +197,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     // Inputs
     .reset(rst),
     .branch_addr_in(branch_addr_W), // From e/w register (checked)
-    .branch_en(branch_D), // From control Unit (checked)
+    .branch_en(branch_en_D), // From control Unit (checked)
     // Output
     .branch_addr_out(branch_addr_D) // To Program Counter (checked)
   );
@@ -232,13 +234,15 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   control_unit control_unit (
     // Inputs
     .opcode(opcode_D), // From DE Register (checked)
+    .flag_reg_values(current_flags_D),
+    .flag_index(bit_pos_D),
     // Outputs
     .alu_src(alu_src_D), // To DE Register (checked)
     .read_write(read_write_D), // To Register file (checked)
     .mem_write(mem_write_D), // To Data Memory, via EW Register (checked)
     .mem_to_reg(mem_to_reg_D), // To EW Register (checked)
-    .branch(branch_D), // To Program Counter (checked)
-    .inc_pc(inc_pc_D), // To Program Counter (checked)
+    .branch_en(branch_en_D), // To Program Counter (checked)
+    .inc_pc(inc_pc_D), // To DE Register (checked)
     .jump(jump_D), // To Hazard Unit (checked)
     .mem_read(mem_addr_D), // To Data Memory (checked)
     .alu_op(ALU_EN_D), // To DE Register (checked)
@@ -271,6 +275,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .mem_read_in(mem_addr_D),
     .read_write_in(read_write_D),
     .alu_op_in(ALU_EN_D), // ALU enable signal input (checked)
+    .branch_en_in(branch_en_D),           // From Control Unit
     // Outputs for control signals
     .alu_src_out(alu_src_E),
     .read_write_out(read_write_E),
@@ -292,7 +297,8 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .flags_out(flags_E),
     .branch_addr_out(branch_addr_E),
     .mem_read_addr_out(mem_addr_E),
-    .alu_op_out(ALU_EN_E) // To ALU (checked)
+    .alu_op_out(ALU_EN_E), // To ALU (checked)
+    .branch_en_out(branch_en_E)
   );
 
   ALU alu(
@@ -337,7 +343,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 
     // Outputs
     .flush_E(flush_EW), // from hazard Unit (checked)
-    .opcode_out(opcode_W), // To Writeback (unused)
+    .opcode_out(opcode_W), // To Hazard unit (checked)
     .reg_write_addr_out(reg_write_addr_W), // To Register file (checked)
     .source_reg1_out(rs1_W), // To Hazard Unit
     .source_reg2_out(rs2_W), // To Hazard Unit
@@ -368,9 +374,10 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   HAZARD_Unit hazard_unit(
   // Inputs
   .clk(clk),
-  .alu_en(ALU_EN_D),                // From DE Register
+  .alu_en_in(ALU_EN_D),                // From DE Register
   .opcode_D(opcode_D),              // From Decode stage
   .opcode_E(opcode_E),              // From Execute stage
+  .opcode_W(opcode_W),
   .rd_D(rd_D),                      // From Decode stage
   .source_reg1_D(rs1_D),                    // From Decode stage
   .source_reg2_D(rs2_D),                    // From Decode stage
@@ -381,7 +388,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   .source_reg1_W(rs1_W),                    // From Writeback stage
   .source_reg2_W(rs2_W),                    // From Writeback stage
   .mem_read_E(mem_read_E),          // From Control Unit via DE Register
-  .branch(branch_D),              // From Control Unit
+  .branch_en(branch_en_E),              // From Control Unit
   .jump_hzd(jump_D),                    // Connect to control_unit
   .reg_write_D(reg_write_D),         // From Control Unit via DE Register
   .reg_write_E(write_mode_E [0]),    // From Control Unit via DE Register
@@ -394,7 +401,8 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   .flush_D(flush_DE),                // To DE Register
   .flush_E(flush_EW),                // To EW Register
   .forward_A(forward_A),            // To forwarding logic
-  .forward_B(forward_B)             // To forwarding logic
+  .forward_B(forward_B),             // To forwarding logic
+  .alu_en_out(alu_en_hzd)  // Unconnected
 );
 
 // =====================
@@ -416,29 +424,51 @@ initial begin
   rst = 1'b1;
   
   // Load test program
-  instruction_mem[1] = {`LBH, `REG0, 8'hFF};
+      instruction_mem[1] = {`LBH, `REG4, 8'h00};
+      instruction_mem[2] = {`LBL, `REG4, 8'h03}; // I need the 3rd fibonacci number
+      instruction_mem[3] = {`LBH, `REG5, 8'h00};
+      instruction_mem[4] = {`LBL, `REG5, 8'h01}; // Loading 0001, to decrement counter
+      instruction_mem[5] = {`LBH, `REG0, 8'h00}; // Let this be reg A       
+      instruction_mem[6] = {`LBL, `REG0, 8'h01}; // reg A = 0001
+      instruction_mem[7] = {`LBH, `REG1, 8'h00}; // Let this be reg B 
+      instruction_mem[8] = {`LBL, `REG1, 8'h01}; // reg B = 0001       
+      instruction_mem[9] = {`ADD, `REG2, `REG0, `REG1, 2'b0}; // reg C = reg A + reg B
+      instruction_mem[10] = {`MOV, `REG0, `REG1, 5'b0}; // A <- B      
+      instruction_mem[11] = {`NOP, 11'b0};
+      instruction_mem[12] = {`MOV, `REG1, `REG2, 5'b0}; // B <- C      
+      instruction_mem[13] = {`SUB, `REG4, `REG4, `REG5, 2'b0}; // Decrement Counter reg
+      instruction_mem[14] = {`NOP, 11'b0};
+      instruction_mem[15] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
+      instruction_mem[16] = {`LOADBR, 11'd9};              
+      instruction_mem[17] = {`JF, 3'b0, 4'b0010,4'b0};
+  /* instruction_mem[1] = {`LBH, `REG0, 8'hFF};
   instruction_mem[2] = {`LBL, `REG0, 8'hFF};
   instruction_mem[3] = {`LBH, `REG1, 8'h01};
   instruction_mem[4] = {`LBL, `REG1, 8'h01};
   instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
   instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
   instruction_mem[7] = {`NOP, 11'b0};
-  instruction_mem[8] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
-  instruction_mem[9] = {`ADD, `REG5, `REG1, `REG4, 2'b0};
-  instruction_mem[10] = {`ADD, `REG6, `REG3, `REG4, 2'b0}; // This messes you up
-  
+  instruction_mem[8] = {`SETF, 3'b0, 4'b000, 4'b0};
+  instruction_mem[9] = {`LOADBR, 11'd14};
+  instruction_mem[10] = {`JF, 3'b0, 4'b000, 4'b0};
+  instruction_mem [11] = {`NOP, 11'b0};
+  instruction_mem [12] = {`NOP, 11'b0};
+  instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
+  instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
+  instruction_mem[15] = {`NOP, 11'b0}; */
   // Wait for reset
   repeat(2) @(posedge clk);
   $display("Time=%0t: Reset released", $time);
   rst = 1'b0;
   
   // Monitor pipeline stages
-  repeat(16) @(posedge clk) begin
+  repeat(30) @(posedge clk) begin
     $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D);
     $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
+    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
   end
   
   // Display final state
@@ -463,5 +493,27 @@ always @(posedge clk or posedge rst) begin
     prev_result_E <= alu_result_0_E;
   end
 end
+
+/* Fibonacci series
+LBH REG4, #00           instruction_mem[1] = {`LBH, `REG4, 8'h00};
+LBL REG4, #02           instruction_mem[2] = {`LBL, `REG4, 8'h01};
+LOAD REG5, [REG4]       instruction_mem[3] = {`LOAD, `REG5, `REG4, 5'b0};
+LBH REG6, #00           instruction_mem[4] = {`LBH, `REG6, 8'h00};       
+LBH REG6, #01           instruction_mem[5] = {`LBL, `REG6, 8'h01};        
+LBH REG0, #00           instruction_mem[6] = {`LBH, `REG0, 8'h00};        
+LBL REG0, #01           instruction_mem[7] = {`LBL, `REG0, 8'h01};        
+LBH REG1, #00           instruction_mem[8] = {`LBH, `REG1, 8'h00};        
+LBL REG1, #01           instruction_mem[9] = {`LBL, `REG1, 8'h01};        
+
+loop:                   
+ADD REG2, REG0, REG1    instruction_mem[10] = {`ADD, `REG2, `REG0, `REG1, 2'b0};    
+MOV REG0, REG1          instruction_mem[11] = {`MOV, `REG0, `REG1, 5'b0};           
+MOV REG1, REG2          instruction_mem[12] = {`MOV, `REG1, `REG2, 5'b0};           
+SUB REG5, REG5, REG6    instruction_mem[13] = {`SUB, `REG5, `REG5, `REG6, 2'b0};  
+LOADBR #000A            instruction_mem[14] = {`LOADBR, 11'h000A};                  
+JF #3                   instruction_mem[15] = {`JF, 3'b0, 4'b0011,4'b0};            
+
+
+*/
 
 endmodule

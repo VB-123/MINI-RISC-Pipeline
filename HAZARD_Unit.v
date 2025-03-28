@@ -1,9 +1,11 @@
+`include "parameters.v"
 module HAZARD_Unit(
   // Inputs
   input wire clk,                         // Clock signal
-  input wire alu_en,                      // From Control Unit (not needed rn)
+  input wire alu_en_in,                      // From Control Unit (not needed rn)
   input wire [4:0] opcode_D,              // From Decode stage
   input wire [4:0] opcode_E,              // From Execute stage
+  input wire [4:0] opcode_W,
   input wire [2:0] rd_D,                  // From Decode stage
   input wire [2:0] source_reg1_D,         // From Decode stage
   input wire [2:0] source_reg2_D,         // From Decode stage
@@ -14,7 +16,7 @@ module HAZARD_Unit(
   input wire [2:0] source_reg1_W,         // From Writeback stage
   input wire [2:0] source_reg2_W,         // From Writeback stage
   input wire mem_read_E,                  // From Control Unit via DE Register
-  input wire branch,                      // From Control Unit
+  input wire branch_en,                      // From Control Unit
   input wire jump_hzd,                    // Connect to control_unit
   input wire reg_write_D, 
   input wire reg_write_E,                 // From Control Unit via DE Register
@@ -28,7 +30,8 @@ module HAZARD_Unit(
   output reg flush_D,                     // To DE Register
   output reg flush_E,                     // To EW Register
   output reg [1:0] forward_A,             // To forwarding logic
-  output reg [1:0] forward_B              // To forwarding logic
+  output reg [1:0] forward_B,              // To forwarding logic
+  output reg alu_en_out
 );
   // New registers to track pipeline state
   /* reg [2:0] preserved_source_reg1;
@@ -83,9 +86,9 @@ module HAZARD_Unit(
 
   // Control hazard detection                       
   wire control_hazard;
-  assign control_hazard = branch || jump_hzd;
+  assign control_hazard = branch_en && ((opcode_W == `SETF) || (opcode_W == `CPLF));
   
-  // Pipeline control logic (unchanged)
+  // Pipeline control logic
   always @(*) begin
     // Default values
     stall_F = 1'b0;
@@ -94,18 +97,16 @@ module HAZARD_Unit(
     flush_F = 1'b0;
     flush_D = 1'b0;
     flush_E = 1'b0;
+    alu_en_out = 1'b0;  // Always disable ALU during branch
 
-    if (raw_hazard) begin
-      stall_F = 1'b1;  // Stall fetch stage
-      stall_D = 1'b1;  // Stall decode stage
-      stall_E = 1'b1;  // Stall execute stage
-      flush_E = 1'b1;  // Insert bubble in execute stage
-    end
-
-    // Control hazard: flush the pipeline
-    if (control_hazard) begin
-      flush_F = 1'b1;  // Flush fetch stage
-      flush_D = 1'b1;  // Flush decode stage
+    // Strict branch control
+    if (branch_en) begin
+        flush_F = 1'b1;  // Always flush fetch stage
+        flush_D = 1'b1;  // Always flush decode stage
+        stall_F = 1'b1;  // Stall fetch
+        stall_D = 1'b1;  // Stall decode
+        stall_E = 1'b1;  // Stall execute
+        alu_en_out = 1'b0;  // Explicitly disable ALU
     end
   end
 endmodule

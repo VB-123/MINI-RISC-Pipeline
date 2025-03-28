@@ -85,124 +85,125 @@ next_flags[7] : Zero  Flag (Z)
     end
     // Default flag values
     else begin
-    // next_flags = current_flags;
-    alu_en_out = 1'b1;
-    case (opcode)
-      `ADD: begin
-        add_temp = {1'b0, operand_1} + {1'b0, operand_2};
-        result_0 = add_temp[15:0];
-
-        // Flag settings
-        next_flags[0] = add_temp[16];
-        next_flags[1] = (operand_1[15] == operand_2[15]) && (result_0[15] != operand_1[15]);
-        set_common_flags(result_0);
-      end
-      `MUL: begin
-        mul_temp = operand_1 * operand_2;
-        result_0 = mul_temp[15:0];
-        // TODO: the write_en should change to 11
-        result_1 = mul_temp[31:16];
-        next_flags[0] = 0;
-      end
-      `SUB: begin
-        result_0 = operand_1 - operand_2;
-
-        // Flag settings
-        next_flags[0] = (operand_1 < operand_2);
-        next_flags[1] = (operand_1[15] != operand_2[15]) && (result_0[15] == operand_2[15]);
-        set_common_flags(result_0);
-      end
-      `DIV: begin
-        if (operand_2 != 0) begin
-          result_0 = operand_1 / operand_2;
-          // TODO: the write_en should change to 11
-          result_1 = operand_1 % operand_2;
+      // next_flags = current_flags;
+      alu_en_out = 1'b1;
+      case (opcode)
+        `ADD: begin
+          add_temp = {1'b0, operand_1} + {1'b0, operand_2};
+          result_0 = add_temp[15:0];
 
           // Flag settings
+          next_flags[0] = add_temp[16];
+          next_flags[1] = (operand_1[15] == operand_2[15]) && (result_0[15] != operand_1[15]);
           set_common_flags(result_0);
-        end else begin
-          result_0 = 16'hFFFF;
-          next_flags[1] = 1'b1;
         end
-      end
+        `MUL: begin
+          mul_temp = operand_1 * operand_2;
+          result_0 = mul_temp[15:0];
+          // TODO: the write_en should change to 11
+          result_1 = mul_temp[31:16];
+          next_flags[0] = 0;
+        end
+        `SUB: begin
+          result_0 = operand_1 - operand_2;
 
-      `NOT: begin
-        result_0 = ~operand_1;
-        set_common_flags(result_0);
-      end
+          // Flag settings
+          next_flags[0] = (operand_1 < operand_2);
+          next_flags[1] = (operand_1[15] != operand_2[15]) && (result_0[15] == operand_2[15]);
+          next_flags[3] = (result_0 == 16'b0) ? 1 : 0; // Set equal flag, if difference of two numbers is 0.
+          set_common_flags(result_0);
+        end
+        `DIV: begin
+          if (operand_2 != 0) begin
+            result_0 = operand_1 / operand_2;
+            // TODO: the write_en should change to 11
+            result_1 = operand_1 % operand_2;
 
-      `AND: begin
-        result_0 = operand_1 & operand_2;
-        set_common_flags(result_0);
-      end
+            // Flag settings
+            set_common_flags(result_0);
+          end else begin
+            result_0 = 16'hFFFF;
+            next_flags[1] = 1'b1;
+          end
+        end
 
-      `OR: begin
-        result_0 = operand_1 | operand_2;
-        set_common_flags(result_0);
-      end
+        `NOT: begin
+          result_0 = ~operand_1;
+          set_common_flags(result_0);
+        end
 
-      `XOR: begin
-        result_0 = operand_1 ^ operand_2;
-        set_common_flags(result_0);
-      end
+        `AND: begin
+          result_0 = operand_1 & operand_2;
+          set_common_flags(result_0);
+        end
 
-      `INC: begin
-        add_temp = {1'b0, operand_1} + 16'b1;
-        result_0 = add_temp[15:0];
-        // Flag settings
-        next_flags[0] = add_temp[16];
-        next_flags[1] = (operand_1[15] == 1'b0) && (result_0[15] == 1'b1);
-        set_common_flags(result_0);
-      end
+        `OR: begin
+          result_0 = operand_1 | operand_2;
+          set_common_flags(result_0);
+        end
 
-      `CMP: begin
-        result_0 = operand_1 - operand_2;
-        // Flag settings
-        next_flags[2] = (operand_1 > operand_2);
-        next_flags[3] = (operand_1 == operand_2);
-        next_flags[0] = (operand_1 < operand_2);
-        set_common_flags(result_0);
-      end
+        `XOR: begin
+          result_0 = operand_1 ^ operand_2;
+          set_common_flags(result_0);
+        end
 
-      `RR: begin
-        result_0 = {operand_1[0], operand_1[15:1]};
-        set_common_flags(result_0);
-      end
+        `INC: begin
+          add_temp = {1'b0, operand_1} + 16'b1;
+          result_0 = add_temp[15:0];
+          // Flag settings
+          next_flags[0] = add_temp[16];
+          next_flags[1] = (operand_1[15] == 1'b0) && (result_0[15] == 1'b1);
+          set_common_flags(result_0);
+        end
 
-      `RL: begin
-        result_0 = {operand_1[14:0], operand_1[15]};
-        set_common_flags(result_0);
-      end
+        `CMP: begin
+          add_temp = {1'b0, operand_1 - operand_2};
+          // Flag settings
+          next_flags[2] = (operand_1 > operand_2);
+          next_flags[3] = (operand_1 == operand_2);
+          next_flags[0] = (operand_1 < operand_2);
+          set_common_flags(add_temp);
+        end
 
-      `SETB: begin
-        result_0 = operand_1 | (16'h0001 << bit_position);
-        set_common_flags(result_0);
-      end
+        `RR: begin
+          result_0 = {operand_1[0], operand_1[15:1]};
+          set_common_flags(result_0);
+        end
 
-      `CLRB: begin
-        result_0 = operand_1 & ~(16'b1 << bit_position);
-        set_common_flags(result_0);
-      end
+        `RL: begin
+          result_0 = {operand_1[14:0], operand_1[15]};
+          set_common_flags(result_0);
+        end
 
-      `CPLB: begin
-        result_0 = operand_1 ^ (16'b1 << bit_position);
-        set_common_flags(result_0);
-      end
-        
-      `SETF: begin
-        next_flags[bit_position] = 1'b1;
-      end
+        `SETB: begin
+          result_0 = operand_1 | (16'h0001 << bit_position);
+          set_common_flags(result_0);
+        end
 
-      `CLRF: begin
-        next_flags[bit_position] = 1'b0;
-      end
+        `CLRB: begin
+          result_0 = operand_1 & ~(16'b1 << bit_position);
+          set_common_flags(result_0);
+        end
 
-      `CPLF: begin 
-        next_flags[bit_position] = ~current_flags[bit_position];
-      end
-      default: $display("No operation");
-    endcase
-  end
+        `CPLB: begin
+          result_0 = operand_1 ^ (16'b1 << bit_position);
+          set_common_flags(result_0);
+        end
+
+        `SETF: begin
+          next_flags[bit_position] = 1'b1;
+        end
+
+        `CLRF: begin
+          next_flags[bit_position] = 1'b0;
+        end
+
+        `CPLF: begin 
+          next_flags[bit_position] = ~current_flags[bit_position];
+        end
+        default: $display("No operation");
+      endcase
+    end
   end
 endmodule
 
