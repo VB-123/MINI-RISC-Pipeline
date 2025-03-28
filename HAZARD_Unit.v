@@ -66,10 +66,8 @@ module HAZARD_Unit(
         forward_B = 2'b10;
       end
     end
-
-    // Detailed debug display
-    $display("Hazard DEBUG: reg_write_W=%b, rd_W=%d, source_reg1_E=%d, source_reg2_E=%d, forward_A=%b, forward_B = %b, rd_E=%d, source_reg1_D=%d, source_reg2_D=%d Stall_D = %b, Flush_D = %b, Stall_E = %b, Flush_E = %b", 
-                            reg_write_W, rd_W, source_reg1_E, source_reg2_E, forward_A, forward_B, rd_E, source_reg1_D, source_reg2_D, stall_D, flush_D, stall_E, flush_E);
+    //$display("Hazard DEBUG: reg_write_W=%b, rd_W=%d, source_reg1_E=%d, source_reg2_E=%d, forward_A=%b, forward_B = %b, rd_E=%d, source_reg1_D=%d, source_reg2_D=%d Stall_D = %b, Flush_D = %b, Stall_E = %b, Flush_E = %b", 
+                            //reg_write_W, rd_W, source_reg1_E, source_reg2_E, forward_A, forward_B, rd_E, source_reg1_D, source_reg2_D, stall_D, flush_D, stall_E, flush_E);
   end
 
   // RAW hazard detection (unchanged)

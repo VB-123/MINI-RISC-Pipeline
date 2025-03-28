@@ -49,7 +49,7 @@ module DE_Register (
     input wire [15:0] flags_in,
     input wire [10:0] branch_addr_in,
     
-    // Control signals from Decode
+    // Control signals 
     input wire alu_src_in,
     input wire [1:0] reg_write_in,
     input wire mem_write_in,
@@ -58,8 +58,7 @@ module DE_Register (
     input wire read_write_in,
     input wire alu_op_in,  // ALU enable signal input
     input wire branch_en_in,
-    input wire branch_flush_F,
-    input wire branch_flush_D,
+    input wire io_op_in,    // IO operation enable input
 
     // Outputs to Execute stage
     output reg [4:0] opcode_out,
@@ -83,6 +82,7 @@ module DE_Register (
     output reg [1:0] write_mode_out,
     output reg mem_read_out,
     output reg alu_op_out,  // ALU enable signal output
+    output reg io_op_out,
     output reg branch_en_out
 );
 
@@ -109,6 +109,7 @@ module DE_Register (
             mem_to_reg_out <= 1'b0;
             write_mode_out <= 2'b00;
             alu_op_out <= 1'b0;  // Reset ALU enable signal
+            io_op_out <= 1'b0;
             branch_en_out <= 1'b0;
         end
         else if (flush_D) begin
@@ -133,6 +134,7 @@ module DE_Register (
             mem_to_reg_out <= 1'b0;
             write_mode_out <= 2'b00;
             alu_op_out <= 1'b0;
+            io_op_out <= 1'b0;
             branch_en_out <= 1'b0;
         end
         else if (!stall_D) begin
@@ -157,6 +159,7 @@ module DE_Register (
             write_mode_out <= reg_write_in;
             read_write_out <= read_write_in;
             alu_op_out <= alu_op_in;
+            io_op_out <= io_op_in;
             branch_en_out <= branch_en_in;
         end
     end
@@ -178,13 +181,15 @@ module EW_Register (
     input wire [15:0] mem_data_in,
     input wire [15:0] flags_in,
     input wire [10:0] branch_addr_in,
+    input wire [15:0] input_port_in,
     
-    // Control signals from Execute
+    // Control signals
     input wire read_write_in,
     input wire [1:0] write_mode_in,
     input wire flag_reg_en_in,
     input wire mem_to_reg_in,
     input wire mem_write_in,
+    input wire io_op_in,
     input wire flush_E,
     input wire stall_E,
     
@@ -207,6 +212,7 @@ module EW_Register (
     output reg read_write_out,
     output reg [1:0] write_mode_out,
     output reg flag_reg_en_out,
+    output reg io_op_out,
     output reg mem_to_reg_out
 );
 
@@ -228,6 +234,7 @@ module EW_Register (
             read_write_out <= 1'b0;
             write_mode_out <= 2'b00;
             flag_reg_en_out <= 1'b0;
+            io_op_out <= 1'b0;
             mem_to_reg_out <= 1'b0;
         end
         else if (flush_E) begin
@@ -247,14 +254,15 @@ module EW_Register (
             read_write_out <= 1'b0;
             write_mode_out <= 2'b00;
             flag_reg_en_out <= 1'b0;
+            io_op_out <= 1'b0;
             mem_to_reg_out <= 1'b0;
         end
         else if (!stall_E) begin
             opcode_out <= opcode_in;
-            reg_write_addr_out <= reg_write_addr_in;
+            reg_write_addr_out <= io_op_in ? source_reg1_in : reg_write_addr_in;
             source_reg1_out <= source_reg1_in;
             source_reg2_out <= source_reg2_in;
-            reg_write_data_0_out <= mem_to_reg_in ? mem_data_in : alu_result_0_in;
+            reg_write_data_0_out <= mem_to_reg_in ? mem_data_in : io_op_in ? input_port_in:  alu_result_0_in;
             reg_write_data_1_out <= alu_result_1_in;
             flags_out <= flags_in;
             branch_addr_out <= branch_addr_in;
@@ -268,6 +276,7 @@ module EW_Register (
             read_write_out <= read_write_in;
             write_mode_out <= write_mode_in;
             flag_reg_en_out <= flag_reg_en_in;
+            io_op_out <= io_op_in;
             mem_to_reg_out <= mem_to_reg_in;
         end
     end

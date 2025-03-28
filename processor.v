@@ -29,15 +29,14 @@
 // 6. LBL, LBH, MOV are non-ALU operations. They take the path through the ALU, but the ALU is disabled.
 // 
 // TODO: Make IO Ports
-// TODO: Test branch operations. Flush_D not activated during branching. Also, alu_en_d is always ON after branching.
 //////////////////////////////////////////////////////////////////////////////////
 
-module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as ports
-  
-  // Special registers
-  reg clk;
-  reg rst;
-
+module pipelined_processor(
+  input wire clk,
+  input wire rst,
+  input wire [15:0] input_reg,
+  output reg [15:0] output_reg
+);
   // Register to store previous ALU result
   reg [15:0] prev_result_E;
 
@@ -86,7 +85,7 @@ module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as p
   wire branch_en_D;
   wire [10:0] branch_addr_in;
   wire inc_pc_D;                   // Increment PC signal from control unit
-
+  wire IO_OP_D;
   // Execute Stage wires
   wire [1:0] forward_A, forward_B; // From forwarding unit (2-bit signals)
   wire [15:0] fwd_A, fwd_B;       // Forwarded data
@@ -118,6 +117,8 @@ module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as p
   wire [15:0] alu_operand_2;       // ALU operand 2
   wire flush_EW;                   // Flush signal for execute stage
   wire stall_EW;                   // Stall signal for execute stage
+  wire IO_OP_E;
+  
   // Write back Stage wires
   wire [10:0] mem_addr_W;
   wire [15:0] mem_write_data_W;
@@ -133,6 +134,7 @@ module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as p
   wire [1:0] write_mode_W;
   wire flag_reg_en_W; // Flag register enable signal
   wire [15:0] flags_W; // These are input flags to writeback, I assume?
+  wire IO_OP_W;
   wire [10:0] branch_addr_W;
   wire [15:0] alu_result_0_E, alu_result_1_E;
   wire ALU_EN_D;
@@ -156,6 +158,7 @@ module pipelined_processor; // TODO: Make clk, reset, input reg, output reg as p
   assign fwd_B =  (stall_EW || flush_EW)? reg_data_2_E: (forward_B == 2'b10) ? 
                (stall_EW ? prev_result_E : reg_write_data_0_W) : 
                reg_data_2_E;
+
   assign alu_operand_2 = (alu_src_E) ? {8'h00, immediate_E} : fwd_B;
 assign mem_write_data_W = reg_data_2_E; // Data to write to memory
 assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
@@ -246,6 +249,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .jump(jump_D), // To Hazard Unit (checked)
     .mem_read(mem_addr_D), // To Data Memory (checked)
     .alu_op(ALU_EN_D), // To DE Register (checked)
+    .io_op(IO_OP_D), // To DE Register (checked)
     .write_mode(write_mode_D) // To Register file via E/W Register (checked)
   );
 
@@ -276,6 +280,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .read_write_in(read_write_D),
     .alu_op_in(ALU_EN_D), // ALU enable signal input (checked)
     .branch_en_in(branch_en_D),           // From Control Unit
+    .io_op_in(IO_OP_D), // From control unit (checked)
     // Outputs for control signals
     .alu_src_out(alu_src_E),
     .read_write_out(read_write_E),
@@ -298,6 +303,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .branch_addr_out(branch_addr_E),
     .mem_read_addr_out(mem_addr_E),
     .alu_op_out(ALU_EN_E), // To ALU (checked)
+    .io_op_out(IO_OP_E),
     .branch_en_out(branch_en_E)
   );
 
@@ -333,6 +339,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .mem_data_in(mem_data_E), // From mem Execute stage, data read out of memory (checked)
     .flags_in(next_flags_E), // From ALU Execute stage (checked)
     .branch_addr_in(branch_addr_E), // To Branch Register (checked)
+    .input_port_in(input_reg), // From input register (checked)
     // Controls
     .stall_E(stall_EW), // From hazard unit 
     .read_write_in(read_write_E), // From DE Register (checked)
@@ -340,6 +347,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .flag_reg_en_in(flag_reg_en_E), // From ALU (trial run)
     .mem_to_reg_in(mem_to_reg_E), // From DE Register (checked)
     .mem_write_in(mem_write_E), // From DE Register (checked)
+    .io_op_in(IO_OP_E), // From DE Register (checked)
 
     // Outputs
     .flush_E(flush_EW), // from hazard Unit (checked)
@@ -357,6 +365,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .mem_addr_out(mem_addr_W), // To Data Memory (checked)
     .mem_write_data_out(mem_write_data_W), // To Data Memory (checked)
     .mem_write_out(mem_write_W), // To Data Memory
+    .io_op_out(IO_OP_W),  // Unconnected
     .mem_to_reg_out(mem_to_reg_W) // To Register File (checked)
   );
 
@@ -408,67 +417,62 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 // =====================
 // TEST PROGRAM
 // =====================
-initial begin
-  // Initialize clk
-  clk = 0;
-  
-  // Generate clock indefinitely
-  forever #5 clk = ~clk;
-end
 
-initial begin
-  // Test program initialization
-  $display("\n=== Starting Processor Test ===\n");
+
+  initial begin
+    $display("\n=== Starting Processor Test ===\n");
   
-  // Initialize rst
-  rst = 1'b1;
+    // Load test program
+      instruction_mem[1] = {`MOVIN, 3'b0, `REG4, 5'b0}; // I need the 3rd fibonacci number
+      instruction_mem[2] = {`LBH, `REG5, 8'h00};
+      instruction_mem[3] = {`LBL, `REG5, 8'h01}; // Loading 0001, to decrement counter
+      instruction_mem[4] = {`LBH, `REG0, 8'h00}; // Let this be reg A       
+      instruction_mem[5] = {`LBL, `REG0, 8'h01}; // reg A = 0001
+      instruction_mem[6] = {`LBH, `REG1, 8'h00}; // Let this be reg B 
+      instruction_mem[7] = {`LBL, `REG1, 8'h01}; // reg B = 0001       
+      instruction_mem[8] = {`ADD, `REG2, `REG0, `REG1, 2'b0}; // reg C = reg A + reg B
+      instruction_mem[9] = {`MOV, `REG0, `REG1, 5'b0}; // A <- B      
+      instruction_mem[10] = {`NOP, 11'b0};
+      instruction_mem[11] = {`MOV, `REG1, `REG2, 5'b0}; // B <- C      
+      instruction_mem[12] = {`SUB, `REG4, `REG4, `REG5, 2'b0}; // Decrement Counter reg
+      instruction_mem[13] = {`NOP, 11'b0};
+      instruction_mem[14] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
+      instruction_mem[15] = {`LOADBR, 11'd8};              
+      instruction_mem[16] = {`JF, 3'b0, 4'b0010,4'b0};
+      instruction_mem[17] = {`MOVOUT, 3'b0, `REG2, 5'b0};
+      /*instruction_mem[1] = {`LBH, `REG0, 8'hFF};
+      instruction_mem[2] = {`LBL, `REG0, 8'hFF};
+      instruction_mem[3] = {`LBH, `REG1, 8'h01};
+      instruction_mem[4] = {`LBL, `REG1, 8'h01};
+      instruction_mem[5] = {`MOVIN, 3'b0, `REG6, 5'b0};
+      instruction_mem[6] = {`MOVOUT, 3'b0, `REG0, 5'b0};
+      instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
+      instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
+      instruction_mem[7] = {`NOP, 11'b0};
+      instruction_mem[8] = {`SETF, 3'b0, 4'b000, 4'b0};
+      instruction_mem[9] = {`LOADBR, 11'd14};
+      instruction_mem[10] = {`JF, 3'b0, 4'b000, 4'b0};
+      instruction_mem [11] = {`NOP, 11'b0};
+      instruction_mem [12] = {`NOP, 11'b0};
+      instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
+      instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
+      instruction_mem[15] = {`NOP, 11'b0}; */
   
-  // Load test program
-      instruction_mem[1] = {`LBH, `REG4, 8'h00};
-      instruction_mem[2] = {`LBL, `REG4, 8'h03}; // I need the 3rd fibonacci number
-      instruction_mem[3] = {`LBH, `REG5, 8'h00};
-      instruction_mem[4] = {`LBL, `REG5, 8'h01}; // Loading 0001, to decrement counter
-      instruction_mem[5] = {`LBH, `REG0, 8'h00}; // Let this be reg A       
-      instruction_mem[6] = {`LBL, `REG0, 8'h01}; // reg A = 0001
-      instruction_mem[7] = {`LBH, `REG1, 8'h00}; // Let this be reg B 
-      instruction_mem[8] = {`LBL, `REG1, 8'h01}; // reg B = 0001       
-      instruction_mem[9] = {`ADD, `REG2, `REG0, `REG1, 2'b0}; // reg C = reg A + reg B
-      instruction_mem[10] = {`MOV, `REG0, `REG1, 5'b0}; // A <- B      
-      instruction_mem[11] = {`NOP, 11'b0};
-      instruction_mem[12] = {`MOV, `REG1, `REG2, 5'b0}; // B <- C      
-      instruction_mem[13] = {`SUB, `REG4, `REG4, `REG5, 2'b0}; // Decrement Counter reg
-      instruction_mem[14] = {`NOP, 11'b0};
-      instruction_mem[15] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
-      instruction_mem[16] = {`LOADBR, 11'd9};              
-      instruction_mem[17] = {`JF, 3'b0, 4'b0010,4'b0};
-  /* instruction_mem[1] = {`LBH, `REG0, 8'hFF};
-  instruction_mem[2] = {`LBL, `REG0, 8'hFF};
-  instruction_mem[3] = {`LBH, `REG1, 8'h01};
-  instruction_mem[4] = {`LBL, `REG1, 8'h01};
-  instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
-  instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
-  instruction_mem[7] = {`NOP, 11'b0};
-  instruction_mem[8] = {`SETF, 3'b0, 4'b000, 4'b0};
-  instruction_mem[9] = {`LOADBR, 11'd14};
-  instruction_mem[10] = {`JF, 3'b0, 4'b000, 4'b0};
-  instruction_mem [11] = {`NOP, 11'b0};
-  instruction_mem [12] = {`NOP, 11'b0};
-  instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
-  instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
-  instruction_mem[15] = {`NOP, 11'b0}; */
-  // Wait for reset
-  repeat(2) @(posedge clk);
-  $display("Time=%0t: Reset released", $time);
-  rst = 1'b0;
   
   // Monitor pipeline stages
-  repeat(30) @(posedge clk) begin
-    $display("\nTime=%0t: Clock cycle", $time);
+  repeat(50) @(posedge clk) begin
+    /* $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
-    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D);
-    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B);
+    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
+    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h, input_reg_data = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B, input_reg);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
-    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
+    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E); */
+    /* $display("\nTime=%0t: Clock cycle", $time);
+    $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
+    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
+    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, input_reg_data = %h, IO_OP_E = %b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, input_reg, IO_OP_E);
+    $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W); */
+    //$display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
   end
   
   // Display final state
@@ -481,6 +485,7 @@ initial begin
   $display("R4 = %h", reg_file_unit.registers[4]);
   $display("R5 = %h", reg_file_unit.registers[5]);
   $display("R6 = %h", reg_file_unit.registers[6]);
+  $display("Output register contents: %h", output_reg);
   $display("\nFlags = %b", current_flags_D);
   
   $finish;
@@ -492,7 +497,11 @@ always @(posedge clk or posedge rst) begin
   end else if (flush_EW) begin  // Only update when not stalled
     prev_result_E <= alu_result_0_E;
   end
+  else if(opcode_E == `MOVOUT) begin
+    output_reg <= fwd_A;
+  end
 end
+
 
 /* Fibonacci series
 LBH REG4, #00           instruction_mem[1] = {`LBH, `REG4, 8'h00};
@@ -515,5 +524,49 @@ JF #3                   instruction_mem[15] = {`JF, 3'b0, 4'b0011,4'b0};
 
 
 */
+/* instruction_mem[1] = {`LBH, `REG0, 8'hFF};
+  instruction_mem[2] = {`LBL, `REG0, 8'hFF};
+  instruction_mem[3] = {`LBH, `REG1, 8'h01};
+  instruction_mem[4] = {`LBL, `REG1, 8'h01};
+  instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
+  instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
+  instruction_mem[7] = {`NOP, 11'b0};
+  instruction_mem[8] = {`SETF, 3'b0, 4'b000, 4'b0};
+  instruction_mem[9] = {`LOADBR, 11'd14};
+  instruction_mem[10] = {`JF, 3'b0, 4'b000, 4'b0};
+  instruction_mem [11] = {`NOP, 11'b0};
+  instruction_mem [12] = {`NOP, 11'b0};
+  instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
+  instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
+  instruction_mem[15] = {`NOP, 11'b0}; */
 
+endmodule
+
+module pipelined_processor_tb;
+reg clk;
+reg rst;
+reg [15:0] input_reg;
+wire [15:0] output_reg;
+
+  initial begin
+    clk = 0;
+    forever #5 clk = ~clk;
+  end
+  initial begin
+    rst = 1'b1;
+    // Wait for reset
+    repeat(2) @(posedge clk);
+    $display("Time=%0t: Reset released", $time);
+    rst = 1'b0;
+    input_reg <= 16'h0003;
+  end
+  initial begin
+    $monitor("Time=%0t: Output Register = %h", $time, output_reg);
+  end
+  pipelined_processor dut(
+    .clk(clk),
+    .rst(rst),
+    .input_reg(input_reg),
+    .output_reg(output_reg)
+  );
 endmodule

@@ -39,7 +39,8 @@ module reg_file (
                 registers[reg_write_addr_0] <= data_in_0; 
                 registers[reg_write_addr_1] <= data_in_1; 
             end
-            default: ; // No write
+            default: begin
+            end   // No write
         endcase
     end
   end

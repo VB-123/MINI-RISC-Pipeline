@@ -14,6 +14,7 @@ module control_unit (
     output reg jump,              // Jump instruction (added for hazard unit)
     output reg mem_read,          // Memory read (added for hazard unit)
     output reg alu_op,            // ALU operation control (added as it was used internally)
+    output reg io_op,             // IO operation
     output reg [1:0] write_mode   // Write mode for register (added as it was used internally)
 );
 
@@ -31,6 +32,7 @@ module control_unit (
     jump = 1'b0;         // Not a jump instruction by default
     mem_read = 1'b0;     // No memory read by default
     write_mode = 2'b00;  // Default write mode
+    io_op = 1'b0;
     flag_value = 1'b0;
     case (opcode)
       // ALU operations
@@ -131,10 +133,24 @@ module control_unit (
       end
       
       // I/O operations
-      `MOVOUT, `MOVIN, `MOVB: begin
+      `MOVIN: begin
         read_write = 1'b1;
+        write_mode = 2'b01;
+        io_op = 1'b1;
       end
-      
+
+      `MOVOUT: begin
+        read_write = 1'b0;
+        write_mode = 2'b00;
+        io_op = 1'b0;
+      end
+
+      `MOVB: begin
+        alu_op = 1'b0;
+        alu_src = 1'b1;
+        io_op = 1'b1;
+      end
+
       `HALT: begin
         inc_pc = 1'b0;  // Do not increment PC
       end
