@@ -118,6 +118,8 @@ module pipelined_processor(
   wire flush_EW;                   // Flush signal for execute stage
   wire stall_EW;                   // Stall signal for execute stage
   wire IO_OP_E;
+  wire forward_decode_A;
+  wire forward_decode_B;
   
   // Write back Stage wires
   wire [10:0] mem_addr_W;
@@ -139,6 +141,7 @@ module pipelined_processor(
   wire [15:0] alu_result_0_E, alu_result_1_E;
   wire ALU_EN_D;
   wire alu_en_hzd;
+  wire bit_in;
 
   // Assignments for fetch stage
   assign instruction_F = instruction_mem[PC_F];
@@ -151,13 +154,18 @@ module pipelined_processor(
   assign immediate_D = instruction_D[7:0]; // Immediate value
   assign bit_pos_D = instruction_D[7:4];   // Bit position
   assign branch_addr_in = instruction_D[10:0];
-
+  // Assignments for execute stage
+  assign bit_in = input_reg[bit_pos_E];
   
   // Forwarding logic
   assign fwd_A = (stall_EW || flush_EW)? reg_data_1_E: (forward_A == 2'b10) ? reg_write_data_0_W : reg_data_1_E;    
   assign fwd_B =  (stall_EW || flush_EW)? reg_data_2_E: (forward_B == 2'b10) ? 
                (stall_EW ? prev_result_E : reg_write_data_0_W) : 
                reg_data_2_E;
+  wire [15:0] fwd_decode_A;
+  wire [15:0] fwd_decode_B;
+  assign fwd_decode_A = forward_decode_A ? reg_write_data_0_W : reg_data_1_D;
+  assign fwd_decode_B = forward_decode_B ? reg_write_data_0_W : reg_data_2_D;
 
   assign alu_operand_2 = (alu_src_E) ? {8'h00, immediate_E} : fwd_B;
 assign mem_write_data_W = reg_data_2_E; // Data to write to memory
@@ -263,8 +271,8 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .reg_write_addr_in(rd_D), // From FD Register (checked)
     .source_reg1_in(rs1_D), // From FD Register (checked)
     .source_reg2_in(rs2_D), // From FD Register (checked)
-    .reg_data_1_in(reg_data_1_D), // From Register File (checked)
-    .reg_data_2_in(reg_data_2_D),  // From Register File (checked)
+    .reg_data_1_in(fwd_decode_A), // From Register File (checked)
+    .reg_data_2_in(fwd_decode_B),  // From Register File (checked)
     .immediate_in(immediate_D), // From FD Register (checked)
     .bit_position_in(bit_pos_D), // From FD Register (checked)
     .pc_in(PC_D), // From FD Register (checked)
@@ -297,6 +305,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .reg_data_1_out(reg_data_1_E),
     .reg_data_2_out(reg_data_2_E),
     .immediate_out(immediate_E),
+    .bit_pos_E(bit_pos_E),    // bit position that is read from the instruction
     .bit_position_out(bit_position_E),
     .pc_out(PC_E),
     .flags_out(flags_E),
@@ -313,6 +322,7 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .opcode(opcode_E), // From DE Register (checked)
     .operand_1(fwd_A), // From DE Register (checked)
     .operand_2(alu_operand_2), // From DE Register (checked)
+    .bit_in(bit_in),
     .bit_position(bit_position_E), // From DE Register (checked)
     .immediate(immediate_E), // From DE Register (checked)
     .current_flags(flags_E), // From DE Register (checked)
@@ -411,6 +421,8 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   .flush_E(flush_EW),                // To EW Register
   .forward_A(forward_A),            // To forwarding logic
   .forward_B(forward_B),             // To forwarding logic
+  .forward_decode_A (forward_decode_A),
+  .forward_decode_B (forward_decode_B),
   .alu_en_out(alu_en_hzd)  // Unconnected
 );
 
@@ -420,10 +432,12 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 
 
   initial begin
+
+    
     $display("\n=== Starting Processor Test ===\n");
   
     // Load test program
-      instruction_mem[1] = {`MOVIN, 3'b0, `REG4, 5'b0}; // I need the 3rd fibonacci number
+      /* instruction_mem[1] = {`MOVIN, 3'b0, `REG4, 5'b0}; // I need the 3rd fibonacci number
       instruction_mem[2] = {`LBH, `REG5, 8'h00};
       instruction_mem[3] = {`LBL, `REG5, 8'h01}; // Loading 0001, to decrement counter
       instruction_mem[4] = {`LBH, `REG0, 8'h00}; // Let this be reg A       
@@ -432,15 +446,13 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
       instruction_mem[7] = {`LBL, `REG1, 8'h01}; // reg B = 0001       
       instruction_mem[8] = {`ADD, `REG2, `REG0, `REG1, 2'b0}; // reg C = reg A + reg B
       instruction_mem[9] = {`MOV, `REG0, `REG1, 5'b0}; // A <- B      
-      instruction_mem[10] = {`NOP, 11'b0};
-      instruction_mem[11] = {`MOV, `REG1, `REG2, 5'b0}; // B <- C      
-      instruction_mem[12] = {`SUB, `REG4, `REG4, `REG5, 2'b0}; // Decrement Counter reg
-      instruction_mem[13] = {`NOP, 11'b0};
-      instruction_mem[14] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
-      instruction_mem[15] = {`LOADBR, 11'd8};              
-      instruction_mem[16] = {`JF, 3'b0, 4'b0010,4'b0};
-      instruction_mem[17] = {`MOVOUT, 3'b0, `REG2, 5'b0};
-      /*instruction_mem[1] = {`LBH, `REG0, 8'hFF};
+      instruction_mem[10] = {`MOV, `REG1, `REG2, 5'b0}; // B <- C      
+      instruction_mem[11] = {`SUB, `REG4, `REG4, `REG5, 2'b0}; // Decrement Counter reg
+      instruction_mem[12] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
+      instruction_mem[13] = {`LOADBR, 11'd8};              
+      instruction_mem[14] = {`JF, 3'b0, 4'b0010,4'b0};
+      instruction_mem[15] = {`MOVOUT, 3'b0, `REG2, 5'b0}; */
+      instruction_mem[1] = {`LBH, `REG0, 8'hFF};
       instruction_mem[2] = {`LBL, `REG0, 8'hFF};
       instruction_mem[3] = {`LBH, `REG1, 8'h01};
       instruction_mem[4] = {`LBL, `REG1, 8'h01};
@@ -456,22 +468,22 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
       instruction_mem [12] = {`NOP, 11'b0};
       instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
       instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
-      instruction_mem[15] = {`NOP, 11'b0}; */
+      instruction_mem[15] = {`MOVB, 3'b0, 4'b0001, 4'b0};
   
   
   // Monitor pipeline stages
-  repeat(50) @(posedge clk) begin
+  repeat(20) @(posedge clk) begin
     /* $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
     $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h, input_reg_data = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B, input_reg);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
     $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E); */
-    /* $display("\nTime=%0t: Clock cycle", $time);
+    $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
-    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
-    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, input_reg_data = %h, IO_OP_E = %b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, input_reg, IO_OP_E);
-    $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W); */
+    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, bit_pos_D = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, bit_pos_D, IO_OP_D);
+    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, input_reg_data = %h, bit_in = %b, bit_position_E = %b, bit_pos_E = %b, IO_OP_E = %b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, input_reg, bit_in, bit_position_E, bit_pos_E, IO_OP_E);
+    $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
     //$display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
   end
   
@@ -558,7 +570,7 @@ wire [15:0] output_reg;
     repeat(2) @(posedge clk);
     $display("Time=%0t: Reset released", $time);
     rst = 1'b0;
-    input_reg <= 16'h0003;
+    input_reg <= 16'h0002;
   end
   initial begin
     $monitor("Time=%0t: Output Register = %h", $time, output_reg);

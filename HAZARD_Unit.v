@@ -31,6 +31,8 @@ module HAZARD_Unit(
   output reg flush_E,                     // To EW Register
   output reg [1:0] forward_A,             // To forwarding logic
   output reg [1:0] forward_B,              // To forwarding logic
+  output reg forward_decode_A,  // Forward to Decode stage for source_reg1
+  output reg forward_decode_B,  // Forward to Decode stage for source_reg2
   output reg alu_en_out
 );
   // New registers to track pipeline state
@@ -45,6 +47,8 @@ module HAZARD_Unit(
     // Default: no forwarding
     forward_A = 2'b00;
     forward_B = 2'b00;
+    forward_decode_A = 1'b0;
+    forward_decode_B = 1'b0;
 
     // Preserve source registers when a hazard is detected
     /* if (raw_hazard || control_hazard) begin
@@ -65,6 +69,15 @@ module HAZARD_Unit(
       if (rd_W == source_reg2_E) begin
         forward_B = 2'b10;
       end
+
+      if (rd_W == source_reg1_D) begin
+        forward_decode_A = 1'b1; // Forward from writeback to decode
+      end
+      
+      if (rd_W == source_reg2_D) begin
+        forward_decode_B = 1'b1; // Forward from writeback to decode
+      end
+
     end
     //$display("Hazard DEBUG: reg_write_W=%b, rd_W=%d, source_reg1_E=%d, source_reg2_E=%d, forward_A=%b, forward_B = %b, rd_E=%d, source_reg1_D=%d, source_reg2_D=%d Stall_D = %b, Flush_D = %b, Stall_E = %b, Flush_E = %b", 
                             //reg_write_W, rd_W, source_reg1_E, source_reg2_E, forward_A, forward_B, rd_E, source_reg1_D, source_reg2_D, stall_D, flush_D, stall_E, flush_E);

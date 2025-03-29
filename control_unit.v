@@ -146,7 +146,7 @@ module control_unit (
       end
 
       `MOVB: begin
-        alu_op = 1'b0;
+        alu_op = 1'b1;
         alu_src = 1'b1;
         io_op = 1'b1;
       end

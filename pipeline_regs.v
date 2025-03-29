@@ -73,6 +73,7 @@ module DE_Register (
     output reg [15:0] flags_out,
     output reg [10:0] branch_addr_out,
     output reg [10:0] mem_read_addr_out,
+    output reg bit_pos_E,
     
     // Control signals to Execute
     output reg alu_src_out,
@@ -145,7 +146,8 @@ module DE_Register (
             reg_data_1_out <= reg_data_1_in;
             reg_data_2_out <= reg_data_2_in;
             immediate_out <= immediate_in;
-            bit_position_out <= bit_position_in;
+            bit_pos_E <= io_op_in? bit_position_in : 4'b0000;
+            bit_position_out <= io_op_in? 4'b0100 : bit_position_in;
             pc_out <= pc_in;
             flags_out <= flags_in;
             branch_addr_out <= branch_addr_in;

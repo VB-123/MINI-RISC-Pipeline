@@ -5,6 +5,7 @@ module ALU (
     input wire [4:0] opcode,  // from instruction register
     input wire [15:0] operand_1,
     input wire [15:0] operand_2,
+    input wire bit_in,
     input wire [3:0] bit_position,  // set the bit in the postion given by this input
     input wire [7:0] immediate, 
     input wire [15:0] current_flags,
@@ -200,6 +201,10 @@ next_flags[7] : Zero  Flag (Z)
 
         `CPLF: begin 
           next_flags[bit_position] = ~current_flags[bit_position];
+        end
+        
+        `MOVB: begin
+          next_flags[bit_position] = bit_in;
         end
         default: $display("No operation");
       endcase
