@@ -78,6 +78,9 @@ module HAZARD_Unit(
         forward_decode_B = 1'b1; // Forward from writeback to decode
       end
 
+      if (reg_write_W && (opcode_D == `LOAD) && (rd_W == source_reg1_D)) begin
+        forward_decode_A = 1'b1;  // Forward from WB to Decode
+      end
     end
     //$display("Hazard DEBUG: reg_write_W=%b, rd_W=%d, source_reg1_E=%d, source_reg2_E=%d, forward_A=%b, forward_B = %b, rd_E=%d, source_reg1_D=%d, source_reg2_D=%d Stall_D = %b, Flush_D = %b, Stall_E = %b, Flush_E = %b", 
                             //reg_write_W, rd_W, source_reg1_E, source_reg2_E, forward_A, forward_B, rd_E, source_reg1_D, source_reg2_D, stall_D, flush_D, stall_E, flush_E);
@@ -110,7 +113,6 @@ module HAZARD_Unit(
     flush_E = 1'b0;
     alu_en_out = 1'b0;  // Always disable ALU during branch
 
-    // Strict branch control
     if (branch_en) begin
         flush_F = 1'b1;  // Always flush fetch stage
         flush_D = 1'b1;  // Always flush decode stage

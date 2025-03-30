@@ -433,11 +433,11 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
 
   initial begin
 
-    
+
     $display("\n=== Starting Processor Test ===\n");
   
     // Load test program
-      /* instruction_mem[1] = {`MOVIN, 3'b0, `REG4, 5'b0}; // I need the 3rd fibonacci number
+      instruction_mem[1] = {`MOVIN, 3'b0, `REG4, 5'b0}; // I need the 3rd fibonacci number
       instruction_mem[2] = {`LBH, `REG5, 8'h00};
       instruction_mem[3] = {`LBL, `REG5, 8'h01}; // Loading 0001, to decrement counter
       instruction_mem[4] = {`LBH, `REG0, 8'h00}; // Let this be reg A       
@@ -451,39 +451,17 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
       instruction_mem[12] = {`CMP, 3'b0, `REG4, `REG5, 2'b0}; // Sets the cmp flag
       instruction_mem[13] = {`LOADBR, 11'd8};              
       instruction_mem[14] = {`JF, 3'b0, 4'b0010,4'b0};
-      instruction_mem[15] = {`MOVOUT, 3'b0, `REG2, 5'b0}; */
-      instruction_mem[1] = {`LBH, `REG0, 8'hFF};
-      instruction_mem[2] = {`LBL, `REG0, 8'hFF};
-      instruction_mem[3] = {`LBH, `REG1, 8'h01};
-      instruction_mem[4] = {`LBL, `REG1, 8'h01};
-      instruction_mem[5] = {`MOVIN, 3'b0, `REG6, 5'b0};
-      instruction_mem[6] = {`MOVOUT, 3'b0, `REG0, 5'b0};
-      instruction_mem[5] = {`SETB, `REG2, 4'b0000, 4'b0};
-      instruction_mem[6] = {`SUB, `REG3, `REG0, `REG2, 2'b0};
-      instruction_mem[7] = {`NOP, 11'b0};
-      instruction_mem[8] = {`SETF, 3'b0, 4'b000, 4'b0};
-      instruction_mem[9] = {`LOADBR, 11'd14};
-      instruction_mem[10] = {`JF, 3'b0, 4'b000, 4'b0};
-      instruction_mem [11] = {`NOP, 11'b0};
-      instruction_mem [12] = {`NOP, 11'b0};
-      instruction_mem [13] = {`ADD, `REG4, `REG1, `REG2, 2'b0};
-      instruction_mem [14] = {`ADD, `REG5, `REG0, `REG1, 2'b0};
-      instruction_mem[15] = {`MOVB, 3'b0, 4'b0001, 4'b0};
+      instruction_mem[15] = {`MOVOUT, 3'b0, `REG2, 5'b0};
   
   
   // Monitor pipeline stages
-  repeat(20) @(posedge clk) begin
-    /* $display("\nTime=%0t: Clock cycle", $time);
+  repeat(38) @(posedge clk) begin
+    $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
     $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h, input_reg_data = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B, input_reg);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
-    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E); */
-    $display("\nTime=%0t: Clock cycle", $time);
-    $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
-    $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, bit_pos_D = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, bit_pos_D, IO_OP_D);
-    $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, input_reg_data = %h, bit_in = %b, bit_position_E = %b, bit_pos_E = %b, IO_OP_E = %b", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, input_reg, bit_in, bit_position_E, bit_pos_E, IO_OP_E);
-    $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
+    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
     //$display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
   end
   
@@ -570,7 +548,7 @@ wire [15:0] output_reg;
     repeat(2) @(posedge clk);
     $display("Time=%0t: Reset released", $time);
     rst = 1'b0;
-    input_reg <= 16'h0002;
+    input_reg <= 16'h0004;
   end
   initial begin
     $monitor("Time=%0t: Output Register = %h", $time, output_reg);
