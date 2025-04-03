@@ -1,3 +1,4 @@
+`timescale 1ps/1ps
 `include "parameters.v"
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Student at College of Engg, Trivandrum
@@ -455,13 +456,13 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
   
   
   // Monitor pipeline stages
-  repeat(38) @(posedge clk) begin
-    $display("\nTime=%0t: Clock cycle", $time);
+  repeat(76) @(posedge clk) begin
+    /* $display("\nTime=%0t: Clock cycle", $time);
     $display("Fetch    : PC=%h, Instruction=%h", PC_F, instruction_F);
     $display("Decode   : Opcode=%h, rs1=%h, rs2=%h, rd=%h, alu_en_d = %b, io_op_D = %b", opcode_D, rs1_D, rs2_D, rd_D, ALU_EN_D, IO_OP_D);
     $display("Execute  : ALU_out=%h, Operand1 = %h, Operand2 = %h, ALU_en = %b, forward_A = %b, forward_B = %b, prev_result = %h, fwd_B = %h, input_reg_data = %h", alu_result_0_E, fwd_A, alu_operand_2,ALU_EN_E, forward_A, forward_B, prev_result_E, fwd_B, input_reg);
     $display("Writeback: WriteAddr=%h, WriteData=%h, WriteEn=%b, Flag_write_en = %b, Flag_register = %b", reg_write_addr_W, reg_write_data_0_W, read_write_W, flag_reg_en_W, next_flags_W);
-    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
+    $display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E); */
     //$display("\n Branch debug from processor_top.v: branch_en_D = %b, branch_en_E = %b\n", branch_en_D,branch_en_E);
   end
   
@@ -548,7 +549,7 @@ wire [15:0] output_reg;
     repeat(2) @(posedge clk);
     $display("Time=%0t: Reset released", $time);
     rst = 1'b0;
-    input_reg <= 16'h0004;
+    input_reg <= 16'h0007;
   end
   initial begin
     $monitor("Time=%0t: Output Register = %h", $time, output_reg);
@@ -560,3 +561,6 @@ wire [15:0] output_reg;
     .output_reg(output_reg)
   );
 endmodule
+
+// NUM: 1 1 2 3 5 8 D
+// POS: 0 1 2 3 4 5 6
