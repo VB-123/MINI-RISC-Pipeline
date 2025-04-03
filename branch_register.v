@@ -5,7 +5,6 @@ module branch_register(
     output reg [10:0] branch_addr_out
 );
     reg [10:0] stored_addr;
-    
     always @(*) begin
         if (reset) begin
             branch_addr_out = 11'b0;
@@ -16,7 +15,7 @@ module branch_register(
             stored_addr = branch_addr_in;
         end 
         else begin
-            branch_addr_out = stored_addr; // Keep previous value
+            branch_addr_out = stored_addr;
         end
     end
 endmodule

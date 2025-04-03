@@ -6,7 +6,6 @@ module reg_file (
     input wire [2:0] read_addr_1,
     output wire [15:0] read_data_0,
     output wire [15:0] read_data_1,
-    
     // Write ports
     input wire reg_write_en,           // Enable writing to registers
     input wire [1:0] write_mode,       // 00: no write, 01: write through port 1, 11: write through port 1 and port 2
@@ -17,9 +16,6 @@ module reg_file (
 );
   // Register file array
   reg [15:0] registers[0:7];
-
-  // Reset and write logic
-
   always @(posedge clk or posedge rst) begin
     if (rst) begin
       // Reset all registers to 0
@@ -34,13 +30,13 @@ module reg_file (
     end
    else if (reg_write_en) begin
         case (write_mode)
-            2'b01: registers[reg_write_addr_0] <= data_in_0;   // Write low byte
+            2'b01: registers[reg_write_addr_0] <= data_in_0;
             2'b11: begin
                 registers[reg_write_addr_0] <= data_in_0; 
                 registers[reg_write_addr_1] <= data_in_1; 
             end
             default: begin
-            end   // No write
+            end 
         endcase
     end
   end

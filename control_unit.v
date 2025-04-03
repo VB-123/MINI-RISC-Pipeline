@@ -13,9 +13,9 @@ module control_unit (
     output reg inc_pc,            // Increment PC
     output reg jump,              // Jump instruction (added for hazard unit)
     output reg mem_read,          // Memory read (added for hazard unit)
-    output reg alu_op,            // ALU operation control (added as it was used internally)
+    output reg alu_op,            // ALU operation control
     output reg io_op,             // IO operation
-    output reg [1:0] write_mode   // Write mode for register (added as it was used internally)
+    output reg [1:0] write_mode   // Write mode for register
 );
 
   reg flag_value;
@@ -66,7 +66,7 @@ module control_unit (
       `LOAD: begin
         read_write = 1'b1;
         mem_to_reg = 1'b1;
-        mem_read = 1'b1;   // Set memory read signal
+        mem_read = 1'b1;
         write_mode = 2'b11; 
         alu_op = 1'b0;
       end
@@ -79,7 +79,7 @@ module control_unit (
       
       // Immediate load operations
       `LBL: begin
-        read_write = 1'b1;       // Enable register write
+        read_write = 1'b1;
         alu_src = 1'b1;
         write_mode = 2'b01;
         alu_op = 1'b0;
@@ -102,24 +102,23 @@ module control_unit (
       
       // Branch/Jump operations
       `JF: begin
-        // Reset all control signals
         alu_src = 1'b0;
         read_write = 1'b0;
         mem_write = 1'b0;
         mem_to_reg = 1'b0;
         branch_en = 1'b0;
-        inc_pc = 1'b1;     // Default to incrementing PC
+        inc_pc = 1'b1;
         jump = 1'b0;
         mem_read = 1'b0;
-        alu_op = 1'b0;     // Explicitly disable ALU
+        alu_op = 1'b0;
         write_mode = 2'b00;
         flag_value = flag_reg_values[flag_index];
 
         if (flag_value) begin
             branch_en = 1'b1;
             jump = 1'b1;
-            inc_pc = 1'b0;  // Prevent PC increment
-            alu_op = 1'b0;  // Ensure ALU remains disabled
+            inc_pc = 1'b0;
+            alu_op = 1'b0; 
         end
       end
       

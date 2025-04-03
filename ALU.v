@@ -18,15 +18,15 @@ module ALU (
 `include "parameters.v"
   // The Bits of the flag Register
   /*
-next_flags[0] : Carry Flag (C)
-next_flags[1] : Overflow Flag (V)
-next_flags[2] : Compare Flag (CMP)
-next_flags[3] : Equal Flag (Eq)
-next_flags[4] : IO Flag (IO)
-next_flags[5] : Parity Flag (P) - Set when number of ones are even
-next_flags[6] : Negative Flag (N)
-next_flags[7] : Zero  Flag (Z)
-*/
+    next_flags[0] : Carry Flag (C)
+    next_flags[1] : Overflow Flag (V)
+    next_flags[2] : Compare Flag (CMP)
+    next_flags[3] : Equal Flag (Eq)
+    next_flags[4] : IO Flag (IO)
+    next_flags[5] : Parity Flag (P) - Set when number of ones are even
+    next_flags[6] : Negative Flag (N)
+    next_flags[7] : Zero  Flag (Z)
+  */
   reg [31:0] mul_temp;
   reg [15:0] div_temp;
   reg [16:0] add_temp;
@@ -84,9 +84,7 @@ next_flags[7] : Zero  Flag (Z)
       next_flags = current_flags;
       alu_en_out = 1'b0;
     end
-    // Default flag values
     else begin
-      // next_flags = current_flags;
       alu_en_out = 1'b1;
       case (opcode)
         `ADD: begin
@@ -101,7 +99,6 @@ next_flags[7] : Zero  Flag (Z)
         `MUL: begin
           mul_temp = operand_1 * operand_2;
           result_0 = mul_temp[15:0];
-          // TODO: the write_en should change to 11
           result_1 = mul_temp[31:16];
           next_flags[0] = 0;
         end
@@ -117,9 +114,7 @@ next_flags[7] : Zero  Flag (Z)
         `DIV: begin
           if (operand_2 != 0) begin
             result_0 = operand_1 / operand_2;
-            // TODO: the write_en should change to 11
             result_1 = operand_1 % operand_2;
-
             // Flag settings
             set_common_flags(result_0);
           end else begin
