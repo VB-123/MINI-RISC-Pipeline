@@ -135,7 +135,7 @@ module pipelined_processor(
   wire read_write_W;
   wire [1:0] write_mode_W;
   wire flag_reg_en_W; // Flag register enable signal
-  wire [15:0] flags_W; // These are input flags to writeback, I assume?
+  wire [15:0] flags_W;
   wire IO_OP_W;
   wire [10:0] branch_addr_W;
   wire [15:0] alu_result_0_E, alu_result_1_E;
@@ -181,10 +181,10 @@ assign mem_addr_W = reg_data_1_E [10:0]; // Address to write to memory
     .rst(rst),
 
     // Controls
-    .inc(inc_pc_D & ~stall_FD), // Use stall_F to control increment (checked)
-    .branch_en(branch_en_E),      // Control Unit output via EW register (checked)
-    .halt(1'b0),               // Hazard Unit output? (unchecked)
-    .branch_addr(branch_addr_D), // Branch Register (checked)
+    .inc(inc_pc_D & ~stall_FD), // Use stall_F to control increment
+    .branch_en(branch_en_E),      // Control Unit output via EW register
+    .halt(1'b0),               
+    .branch_addr(branch_addr_D), // Branch Register
 
     // Output
     .current_addr(PC_F) // To FD Register (checked)
