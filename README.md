@@ -18,7 +18,7 @@ A hardware implementation of a 4-stage pipelined RISC processor designed in synt
 
 ## 📊 Microarchitecture & Pipeline Stages
 
-![MINI-RISC Microarchitecture Diagram](Pipeline_microarchitecture.jpg)
+![MINI-RISC Microarchitecture Diagram](Pipeline_microarchitecture.png)
 
 The processor separates instruction execution into four explicit stages divided by distinct pipeline registers:
 [ Fetch ] ──▶ (F/D Register) ──▶ [ Decode ] ──▶ (D/E Register) ──▶ [ Execute ] ──▶ (E/W Register) ──▶ [ Writeback/Mem ]
