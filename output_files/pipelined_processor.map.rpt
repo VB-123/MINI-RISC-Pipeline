@@ -1,0 +1,1249 @@
+Analysis & Synthesis report for pipelined_processor
+Sat Nov 21 01:46:03 2026
+Quartus Prime Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Analysis & Synthesis Summary
+  3. Analysis & Synthesis Settings
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. Analysis & Synthesis RAM Summary
+  9. Analysis & Synthesis DSP Block Usage Summary
+ 10. User-Specified and Inferred Latches
+ 11. Registers Removed During Synthesis
+ 12. General Register Statistics
+ 13. Registers Packed Into Inferred Megafunctions
+ 14. Registers Added for RAM Pass-Through Logic
+ 15. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 16. Source assignments for pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0|altsyncram_rhg1:auto_generated
+ 17. Source assignments for pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0|altsyncram_tbk1:auto_generated
+ 18. Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0
+ 19. Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0
+ 20. Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0
+ 21. Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0
+ 22. altsyncram Parameter Settings by Entity Instance
+ 23. Port Connectivity Checks: "pipelined_processor:u_cpu|HAZARD_Unit:hazard_unit"
+ 24. Port Connectivity Checks: "pipelined_processor:u_cpu|EW_Register:EW_Reg"
+ 25. Port Connectivity Checks: "pipelined_processor:u_cpu|DE_Register:DE_Reg"
+ 26. Port Connectivity Checks: "pipelined_processor:u_cpu|control_unit:control_unit"
+ 27. Post-Synthesis Netlist Statistics for Top Partition
+ 28. Elapsed Time Per Partition
+ 29. Analysis & Synthesis Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2020  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel FPGA IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Intel and sold by Intel or its authorized distributors.  Please
+refer to the applicable agreement for further details, at
+https://fpgasoftware.intel.com/eula.
+
+
+
++-------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                  ;
++---------------------------------+---------------------------------------------+
+; Analysis & Synthesis Status     ; Successful - Sat Nov 21 01:46:03 2026       ;
+; Quartus Prime Version           ; 20.1.0 Build 711 06/05/2020 SJ Lite Edition ;
+; Revision Name                   ; pipelined_processor                         ;
+; Top-level Entity Name           ; processor_top                               ;
+; Family                          ; Cyclone V                                   ;
+; Logic utilization (in ALMs)     ; N/A                                         ;
+; Total registers                 ; 391                                         ;
+; Total pins                      ; 67                                          ;
+; Total virtual pins              ; 0                                           ;
+; Total block memory bits         ; 65,536                                      ;
+; Total DSP Blocks                ; 1                                           ;
+; Total HSSI RX PCSs              ; 0                                           ;
+; Total HSSI PMA RX Deserializers ; 0                                           ;
+; Total HSSI TX PCSs              ; 0                                           ;
+; Total HSSI PMA TX Serializers   ; 0                                           ;
+; Total PLLs                      ; 0                                           ;
+; Total DLLs                      ; 0                                           ;
++---------------------------------+---------------------------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Settings                                                                                              ;
++---------------------------------------------------------------------------------+--------------------+---------------------+
+; Option                                                                          ; Setting            ; Default Value       ;
++---------------------------------------------------------------------------------+--------------------+---------------------+
+; Device                                                                          ; 5CSEMA5F31C6       ;                     ;
+; Top-level entity name                                                           ; processor_top      ; pipelined_processor ;
+; Family name                                                                     ; Cyclone V          ; Cyclone V           ;
+; Use smart compilation                                                           ; Off                ; Off                 ;
+; Enable parallel Assembler and Timing Analyzer during compilation                ; On                 ; On                  ;
+; Enable compact report table                                                     ; Off                ; Off                 ;
+; Restructure Multiplexers                                                        ; Auto               ; Auto                ;
+; MLAB Add Timing Constraints For Mixed-Port Feed-Through Mode Setting Don't Care ; Off                ; Off                 ;
+; Create Debugging Nodes for IP Cores                                             ; Off                ; Off                 ;
+; Preserve fewer node names                                                       ; On                 ; On                  ;
+; Intel FPGA IP Evaluation Mode                                                   ; Enable             ; Enable              ;
+; Verilog Version                                                                 ; Verilog_2001       ; Verilog_2001        ;
+; VHDL Version                                                                    ; VHDL_1993          ; VHDL_1993           ;
+; State Machine Processing                                                        ; Auto               ; Auto                ;
+; Safe State Machine                                                              ; Off                ; Off                 ;
+; Extract Verilog State Machines                                                  ; On                 ; On                  ;
+; Extract VHDL State Machines                                                     ; On                 ; On                  ;
+; Ignore Verilog initial constructs                                               ; Off                ; Off                 ;
+; Iteration limit for constant Verilog loops                                      ; 5000               ; 5000                ;
+; Iteration limit for non-constant Verilog loops                                  ; 250                ; 250                 ;
+; Add Pass-Through Logic to Inferred RAMs                                         ; On                 ; On                  ;
+; Infer RAMs from Raw Logic                                                       ; On                 ; On                  ;
+; Parallel Synthesis                                                              ; On                 ; On                  ;
+; DSP Block Balancing                                                             ; Auto               ; Auto                ;
+; NOT Gate Push-Back                                                              ; On                 ; On                  ;
+; Power-Up Don't Care                                                             ; On                 ; On                  ;
+; Remove Redundant Logic Cells                                                    ; Off                ; Off                 ;
+; Remove Duplicate Registers                                                      ; On                 ; On                  ;
+; Ignore CARRY Buffers                                                            ; Off                ; Off                 ;
+; Ignore CASCADE Buffers                                                          ; Off                ; Off                 ;
+; Ignore GLOBAL Buffers                                                           ; Off                ; Off                 ;
+; Ignore ROW GLOBAL Buffers                                                       ; Off                ; Off                 ;
+; Ignore LCELL Buffers                                                            ; Off                ; Off                 ;
+; Ignore SOFT Buffers                                                             ; On                 ; On                  ;
+; Limit AHDL Integers to 32 Bits                                                  ; Off                ; Off                 ;
+; Optimization Technique                                                          ; Balanced           ; Balanced            ;
+; Carry Chain Length                                                              ; 70                 ; 70                  ;
+; Auto Carry Chains                                                               ; On                 ; On                  ;
+; Auto Open-Drain Pins                                                            ; On                 ; On                  ;
+; Perform WYSIWYG Primitive Resynthesis                                           ; Off                ; Off                 ;
+; Auto ROM Replacement                                                            ; On                 ; On                  ;
+; Auto RAM Replacement                                                            ; On                 ; On                  ;
+; Auto DSP Block Replacement                                                      ; On                 ; On                  ;
+; Auto Shift Register Replacement                                                 ; Auto               ; Auto                ;
+; Allow Shift Register Merging across Hierarchies                                 ; Auto               ; Auto                ;
+; Auto Clock Enable Replacement                                                   ; On                 ; On                  ;
+; Strict RAM Replacement                                                          ; Off                ; Off                 ;
+; Allow Synchronous Control Signals                                               ; On                 ; On                  ;
+; Force Use of Synchronous Clear Signals                                          ; Off                ; Off                 ;
+; Auto Resource Sharing                                                           ; Off                ; Off                 ;
+; Allow Any RAM Size For Recognition                                              ; Off                ; Off                 ;
+; Allow Any ROM Size For Recognition                                              ; Off                ; Off                 ;
+; Allow Any Shift Register Size For Recognition                                   ; Off                ; Off                 ;
+; Use LogicLock Constraints during Resource Balancing                             ; On                 ; On                  ;
+; Ignore translate_off and synthesis_off directives                               ; Off                ; Off                 ;
+; Timing-Driven Synthesis                                                         ; On                 ; On                  ;
+; Report Parameter Settings                                                       ; On                 ; On                  ;
+; Report Source Assignments                                                       ; On                 ; On                  ;
+; Report Connectivity Checks                                                      ; On                 ; On                  ;
+; Ignore Maximum Fan-Out Assignments                                              ; Off                ; Off                 ;
+; Synchronization Register Chain Length                                           ; 3                  ; 3                   ;
+; Power Optimization During Synthesis                                             ; Normal compilation ; Normal compilation  ;
+; HDL message level                                                               ; Level2             ; Level2              ;
+; Suppress Register Optimization Related Messages                                 ; Off                ; Off                 ;
+; Number of Removed Registers Reported in Synthesis Report                        ; 5000               ; 5000                ;
+; Number of Swept Nodes Reported in Synthesis Report                              ; 5000               ; 5000                ;
+; Number of Inverted Registers Reported in Synthesis Report                       ; 100                ; 100                 ;
+; Clock MUX Protection                                                            ; On                 ; On                  ;
+; Auto Gated Clock Conversion                                                     ; Off                ; Off                 ;
+; Block Design Naming                                                             ; Auto               ; Auto                ;
+; SDC constraint protection                                                       ; Off                ; Off                 ;
+; Synthesis Effort                                                                ; Auto               ; Auto                ;
+; Shift Register Replacement - Allow Asynchronous Clear Signal                    ; On                 ; On                  ;
+; Pre-Mapping Resynthesis Optimization                                            ; Off                ; Off                 ;
+; Analysis & Synthesis Message Level                                              ; Medium             ; Medium              ;
+; Disable Register Merging Across Hierarchies                                     ; Auto               ; Auto                ;
+; Resource Aware Inference For Block RAM                                          ; On                 ; On                  ;
+; Automatic Parallel Synthesis                                                    ; On                 ; On                  ;
+; Partial Reconfiguration Bitstream ID                                            ; Off                ; Off                 ;
++---------------------------------------------------------------------------------+--------------------+---------------------+
+
+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 12          ;
+; Maximum allowed            ; 12          ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 12          ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processor 2            ;   0.0%      ;
+;     Processor 3            ;   0.0%      ;
+;     Processor 4            ;   0.0%      ;
+;     Processor 5            ;   0.0%      ;
+;     Processor 6            ;   0.0%      ;
+;     Processor 7            ;   0.0%      ;
+;     Processor 8            ;   0.0%      ;
+;     Processors 9-12        ;   0.0%      ;
++----------------------------+-------------+
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                                                                                                                                 ;
++------------------------------------------------------------------+-----------------+-------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path                                 ; Used in Netlist ; File Type                                             ; File Name with Absolute Path                                                                                                    ; Library ;
++------------------------------------------------------------------+-----------------+-------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------+---------+
+; reg_file.v                                                       ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/reg_file.v                                                       ;         ;
+; program_counter.v                                                ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/program_counter.v                                                ;         ;
+; processor.v                                                      ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v                                                      ;         ;
+; pipeline_regs.v                                                  ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v                                                  ;         ;
+; parameters.v                                                     ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/parameters.v                                                     ;         ;
+; memory.v                                                         ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/memory.v                                                         ;         ;
+; HAZARD_Unit.v                                                    ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/HAZARD_Unit.v                                                    ;         ;
+; control_unit.v                                                   ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/control_unit.v                                                   ;         ;
+; branch_register.v                                                ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v                                                ;         ;
+; ALU.v                                                            ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v                                                            ;         ;
+; processor_top.v                                                  ; yes             ; User Verilog HDL File                                 ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v                                                  ;         ;
+; altsyncram.tdf                                                   ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/altsyncram.tdf                                                           ;         ;
+; stratix_ram_block.inc                                            ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/stratix_ram_block.inc                                                    ;         ;
+; lpm_mux.inc                                                      ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/lpm_mux.inc                                                              ;         ;
+; lpm_decode.inc                                                   ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/lpm_decode.inc                                                           ;         ;
+; aglobal201.inc                                                   ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/aglobal201.inc                                                           ;         ;
+; a_rdenreg.inc                                                    ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/a_rdenreg.inc                                                            ;         ;
+; altrom.inc                                                       ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/altrom.inc                                                               ;         ;
+; altram.inc                                                       ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/altram.inc                                                               ;         ;
+; altdpram.inc                                                     ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/altdpram.inc                                                             ;         ;
+; db/altsyncram_rhg1.tdf                                           ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/altsyncram_rhg1.tdf                                           ;         ;
+; db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif ; yes             ; Auto-Generated Auto-Found Memory Initialization File  ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif ;         ;
+; db/altsyncram_tbk1.tdf                                           ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/altsyncram_tbk1.tdf                                           ;         ;
+; lpm_divide.tdf                                                   ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/lpm_divide.tdf                                                           ;         ;
+; abs_divider.inc                                                  ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/abs_divider.inc                                                          ;         ;
+; sign_div_unsign.inc                                              ; yes             ; Megafunction                                          ; c:/intelfpga_lite/20.1/quartus/libraries/megafunctions/sign_div_unsign.inc                                                      ;         ;
+; db/lpm_divide_a5m.tdf                                            ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/lpm_divide_a5m.tdf                                            ;         ;
+; db/sign_div_unsign_dnh.tdf                                       ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/sign_div_unsign_dnh.tdf                                       ;         ;
+; db/alt_u_div_03f.tdf                                             ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/alt_u_div_03f.tdf                                             ;         ;
+; db/lpm_divide_7dm.tdf                                            ; yes             ; Auto-Generated Megafunction                           ; C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/lpm_divide_7dm.tdf                                            ;         ;
++------------------------------------------------------------------+-----------------+-------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------+---------+
+
+
++--------------------------------------------------------+
+; Analysis & Synthesis Resource Usage Summary            ;
++---------------------------------------------+----------+
+; Resource                                    ; Usage    ;
++---------------------------------------------+----------+
+; Estimate of Logic utilization (ALMs needed) ; 939      ;
+;                                             ;          ;
+; Combinational ALUT usage for logic          ; 1507     ;
+;     -- 7 input functions                    ; 14       ;
+;     -- 6 input functions                    ; 217      ;
+;     -- 5 input functions                    ; 558      ;
+;     -- 4 input functions                    ; 397      ;
+;     -- <=3 input functions                  ; 321      ;
+;                                             ;          ;
+; Dedicated logic registers                   ; 391      ;
+;                                             ;          ;
+; I/O pins                                    ; 67       ;
+; Total MLAB memory bits                      ; 0        ;
+; Total block memory bits                     ; 65536    ;
+;                                             ;          ;
+; Total DSP Blocks                            ; 1        ;
+;                                             ;          ;
+; Maximum fan-out node                        ; proc_clk ;
+; Maximum fan-out                             ; 401      ;
+; Total fan-out                               ; 9187     ;
+; Average fan-out                             ; 4.45     ;
++---------------------------------------------+----------+
+
+
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                                                                                           ;
++----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+--------------+
+; Compilation Hierarchy Node                   ; Combinational ALUTs ; Dedicated Logic Registers ; Block Memory Bits ; DSP Blocks ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                                                              ; Entity Name         ; Library Name ;
++----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+--------------+
+; |processor_top                               ; 1507 (20)           ; 391 (22)                  ; 65536             ; 1          ; 67   ; 0            ; |processor_top                                                                                                                                   ; processor_top       ; work         ;
+;    |decoder_hex:u_h0|                        ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|decoder_hex:u_h0                                                                                                                  ; decoder_hex         ; work         ;
+;    |decoder_hex:u_h1|                        ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|decoder_hex:u_h1                                                                                                                  ; decoder_hex         ; work         ;
+;    |decoder_hex:u_h2|                        ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|decoder_hex:u_h2                                                                                                                  ; decoder_hex         ; work         ;
+;    |decoder_hex:u_h3|                        ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|decoder_hex:u_h3                                                                                                                  ; decoder_hex         ; work         ;
+;    |pipelined_processor:u_cpu|               ; 1459 (161)          ; 369 (17)                  ; 65536             ; 1          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu                                                                                                         ; pipelined_processor ; work         ;
+;       |ALU:alu|                              ; 1143 (556)          ; 0 (0)                     ; 0                 ; 1          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu                                                                                                 ; ALU                 ; work         ;
+;          |lpm_divide:Div0|                   ; 302 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0                                                                                 ; lpm_divide          ; work         ;
+;             |lpm_divide_7dm:auto_generated|  ; 302 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0|lpm_divide_7dm:auto_generated                                                   ; lpm_divide_7dm      ; work         ;
+;                |sign_div_unsign_dnh:divider| ; 302 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0|lpm_divide_7dm:auto_generated|sign_div_unsign_dnh:divider                       ; sign_div_unsign_dnh ; work         ;
+;                   |alt_u_div_03f:divider|    ; 302 (302)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0|lpm_divide_7dm:auto_generated|sign_div_unsign_dnh:divider|alt_u_div_03f:divider ; alt_u_div_03f       ; work         ;
+;          |lpm_divide:Mod0|                   ; 285 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0                                                                                 ; lpm_divide          ; work         ;
+;             |lpm_divide_a5m:auto_generated|  ; 285 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0|lpm_divide_a5m:auto_generated                                                   ; lpm_divide_a5m      ; work         ;
+;                |sign_div_unsign_dnh:divider| ; 285 (0)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0|lpm_divide_a5m:auto_generated|sign_div_unsign_dnh:divider                       ; sign_div_unsign_dnh ; work         ;
+;                   |alt_u_div_03f:divider|    ; 285 (285)           ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0|lpm_divide_a5m:auto_generated|sign_div_unsign_dnh:divider|alt_u_div_03f:divider ; alt_u_div_03f       ; work         ;
+;       |DE_Register:DE_Reg|                   ; 7 (7)               ; 80 (80)                   ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|DE_Register:DE_Reg                                                                                      ; DE_Register         ; work         ;
+;       |EW_Register:EW_Reg|                   ; 51 (51)             ; 77 (77)                   ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|EW_Register:EW_Reg                                                                                      ; EW_Register         ; work         ;
+;       |FD_Register:FD_Reg|                   ; 1 (1)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|FD_Register:FD_Reg                                                                                      ; FD_Register         ; work         ;
+;       |Flag_Register:flag_reg|               ; 16 (16)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|Flag_Register:flag_reg                                                                                  ; Flag_Register       ; work         ;
+;       |HAZARD_Unit:hazard_unit|              ; 7 (7)               ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|HAZARD_Unit:hazard_unit                                                                                 ; HAZARD_Unit         ; work         ;
+;       |altsyncram:instruction_mem_rtl_0|     ; 0 (0)               ; 0 (0)                     ; 32768             ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0                                                                        ; altsyncram          ; work         ;
+;          |altsyncram_rhg1:auto_generated|    ; 0 (0)               ; 0 (0)                     ; 32768             ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0|altsyncram_rhg1:auto_generated                                         ; altsyncram_rhg1     ; work         ;
+;       |branch_register:Branch_Reg|           ; 11 (11)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|branch_register:Branch_Reg                                                                              ; branch_register     ; work         ;
+;       |control_unit:control_unit|            ; 16 (16)             ; 0 (0)                     ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|control_unit:control_unit                                                                               ; control_unit        ; work         ;
+;       |memory:data_memory|                   ; 7 (7)               ; 56 (56)                   ; 32768             ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|memory:data_memory                                                                                      ; memory              ; work         ;
+;          |altsyncram:mem_rtl_0|              ; 0 (0)               ; 0 (0)                     ; 32768             ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0                                                                 ; altsyncram          ; work         ;
+;             |altsyncram_tbk1:auto_generated| ; 0 (0)               ; 0 (0)                     ; 32768             ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0|altsyncram_tbk1:auto_generated                                  ; altsyncram_tbk1     ; work         ;
+;       |program_counter:PC|                   ; 23 (23)             ; 11 (11)                   ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|program_counter:PC                                                                                      ; program_counter     ; work         ;
+;       |reg_file:reg_file_unit|               ; 16 (16)             ; 128 (128)                 ; 0                 ; 0          ; 0    ; 0            ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit                                                                                  ; reg_file            ; work         ;
++----------------------------------------------+---------------------+---------------------------+-------------------+------------+------+--------------+--------------------------------------------------------------------------------------------------------------------------------------------------+---------------------+--------------+
+Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis RAM Summary                                                                                                                                                                                                                                             ;
++-------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------------------------------------------------------------------+
+; Name                                                                                                        ; Type ; Mode             ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Size  ; MIF                                                              ;
++-------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------------------------------------------------------------------+
+; pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0|altsyncram_rhg1:auto_generated|ALTSYNCRAM        ; AUTO ; ROM              ; 2048         ; 16           ; --           ; --           ; 32768 ; db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif ;
+; pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0|altsyncram_tbk1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 2048         ; 16           ; 2048         ; 16           ; 32768 ; None                                                             ;
++-------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+-------+------------------------------------------------------------------+
+
+
++-----------------------------------------------+
+; Analysis & Synthesis DSP Block Usage Summary  ;
++---------------------------------+-------------+
+; Statistic                       ; Number Used ;
++---------------------------------+-------------+
+; Two Independent 18x18           ; 1           ;
+; Total number of DSP blocks      ; 1           ;
+;                                 ;             ;
+; Fixed Point Unsigned Multiplier ; 1           ;
++---------------------------------+-------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; User-Specified and Inferred Latches                                                                                                                           ;
++----------------------------------------------------------------------+---------------------------------------------------------------+------------------------+
+; Latch Name                                                           ; Latch Enable Signal                                           ; Free of Timing Hazards ;
++----------------------------------------------------------------------+---------------------------------------------------------------+------------------------+
+; pipelined_processor:u_cpu|ALU:alu|result_0[0]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[0]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[2]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[4]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[6]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[8]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[10]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[12]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[14]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[1]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[3]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[5]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[7]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[9]    ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[11]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[13]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|Flag_Register:flag_reg|current_flags[15]   ; pipelined_processor:u_cpu|EW_Register:EW_Reg|flag_reg_en_out  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[1]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[2]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[3]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[4]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[5]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[6]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[7]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[8]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[9]                        ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[10]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[11]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[12]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[13]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[14]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_0[15]                       ; pipelined_processor:u_cpu|ALU:alu|result_0[15]                ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|lbh_pending                        ; GND                                                           ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_reg[0]                    ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_reg[1]                    ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_reg[2]                    ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[8]                 ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[9]                 ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[10]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[11]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[12]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[13]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[14]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|last_lbh_result[15]                ; pipelined_processor:u_cpu|ALU:alu|Equal0                      ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[0]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[0]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[1]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[2]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[3]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[4]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[5]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[6]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[7]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[8]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[9]  ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|branch_register:Branch_Reg|stored_addr[10] ; pipelined_processor:u_cpu|control_unit:control_unit|branch_en ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[0]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[0]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[2]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[2]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[4]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[4]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[6]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[6]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[8]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[8]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[10]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[10]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[12]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[12]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[14]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[14]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[1]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[1]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[3]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[3]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[5]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[5]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[7]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[7]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[9]                      ; pipelined_processor:u_cpu|ALU:alu|next_flags[9]               ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[11]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[11]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[13]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[13]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|next_flags[15]                     ; pipelined_processor:u_cpu|ALU:alu|next_flags[15]              ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[1]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[2]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[3]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[4]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[5]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[6]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[7]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[8]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[9]                        ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[10]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[11]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[12]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[13]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[14]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; pipelined_processor:u_cpu|ALU:alu|result_1[15]                       ; pipelined_processor:u_cpu|ALU:alu|Selector32                  ; yes                    ;
+; Number of user-specified and inferred latches = 87                   ;                                                               ;                        ;
++----------------------------------------------------------------------+---------------------------------------------------------------+------------------------+
+Note: All latches listed above may not be present at the end of synthesis due to various synthesis optimizations.
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                                                                                                      ;
++---------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+; Register name                                                       ; Reason for Removal                                                                ;
++---------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+; pipelined_processor:u_cpu|prev_result_E[0..14]                      ; Merged with pipelined_processor:u_cpu|prev_result_E[15]                           ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[15] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[15] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[14] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[14] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[13] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[13] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[12] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[12] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[11] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[11] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[10] ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[10] ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[9]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[9]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[8]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[8]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[7]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[7]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[6]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[6]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[5]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[5]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[4]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[4]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[3]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[3]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[2]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[2]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[1]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[1]  ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|mem_write_data_out[0]  ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_1_out[0]  ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[10]    ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_write_addr_out[2]    ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[9]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_write_addr_out[1]    ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[8]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_write_addr_out[0]    ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[4]       ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[2]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[4]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[2]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[3]       ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[1]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[3]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[1]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[2]       ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[0]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[2]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|source_reg2_out[0]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[10]  ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[10]       ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[9]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[9]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[8]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[8]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[7]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[7]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[6]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[6]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[5]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[5]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[4]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[4]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[3]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[3]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[2]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[2]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[1]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[1]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|mem_read_addr_out[0]   ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[0]        ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[7]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[7]         ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[6]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[6]         ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[5]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[5]         ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[1]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[1]         ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|branch_addr_out[0]     ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|immediate_out[0]         ;
+; pipelined_processor:u_cpu|DE_Register:DE_Reg|write_mode_out[0]      ; Merged with pipelined_processor:u_cpu|DE_Register:DE_Reg|read_write_out           ;
+; pipelined_processor:u_cpu|EW_Register:EW_Reg|write_mode_out[0]      ; Merged with pipelined_processor:u_cpu|EW_Register:EW_Reg|read_write_out           ;
+; pipelined_processor:u_cpu|prev_result_E[15]                         ; Stuck at GND due to stuck port data_in                                            ;
+; Total Number of Removed Registers = 59                              ;                                                                                   ;
++---------------------------------------------------------------------+-----------------------------------------------------------------------------------+
+
+
++------------------------------------------------------+
+; General Register Statistics                          ;
++----------------------------------------------+-------+
+; Statistic                                    ; Value ;
++----------------------------------------------+-------+
+; Total registers                              ; 391   ;
+; Number of registers using Synchronous Clear  ; 27    ;
+; Number of registers using Synchronous Load   ; 128   ;
+; Number of registers using Asynchronous Clear ; 324   ;
+; Number of registers using Asynchronous Load  ; 0     ;
+; Number of registers using Clock Enable       ; 264   ;
+; Number of registers using Preset             ; 0     ;
++----------------------------------------------+-------+
+
+
++------------------------------------------------------------------------------------------------------------------------------+
+; Registers Packed Into Inferred Megafunctions                                                                                 ;
++---------------------------------------------------------------------+-------------------------------------------------+------+
+; Register Name                                                       ; Megafunction                                    ; Type ;
++---------------------------------------------------------------------+-------------------------------------------------+------+
+; pipelined_processor:u_cpu|FD_Register:FD_Reg|instruction_out[0..15] ; pipelined_processor:u_cpu|instruction_mem_rtl_0 ; RAM  ;
++---------------------------------------------------------------------+-------------------------------------------------+------+
+
+
++----------------------------------------------------------------------------------------------------------------------------+
+; Registers Added for RAM Pass-Through Logic                                                                                 ;
++-------------------------------------------------------------------+--------------------------------------------------------+
+; Register Name                                                     ; RAM Name                                               ;
++-------------------------------------------------------------------+--------------------------------------------------------+
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[0]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[1]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[2]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[3]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[4]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[5]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[6]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[7]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[8]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[9]  ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[10] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[11] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[12] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[13] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[14] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[15] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[16] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[17] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[18] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[19] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[20] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[21] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[22] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[23] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[24] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[25] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[26] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[27] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[28] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[29] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[30] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[31] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[32] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[33] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[34] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[35] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[36] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[37] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
+; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0_bypass[38] ; pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0 ;
++-------------------------------------------------------------------+--------------------------------------------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Multiplexer Restructuring Statistics (Restructuring Performed)                                                                                                                                    ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------+
+; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                                          ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------+
+; 3:1                ; 8 bits    ; 16 LEs        ; 0 LEs                ; 16 LEs                 ; Yes        ; |processor_top|proc_input_reg[4]                                                    ;
+; 3:1                ; 8 bits    ; 16 LEs        ; 0 LEs                ; 16 LEs                 ; Yes        ; |processor_top|proc_input_reg[9]                                                    ;
+; 9:1                ; 5 bits    ; 30 LEs        ; 30 LEs               ; 0 LEs                  ; Yes        ; |processor_top|pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_1_out[14]      ;
+; 5:1                ; 11 bits   ; 33 LEs        ; 22 LEs               ; 11 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|program_counter:PC|current_addr[0]         ;
+; 5:1                ; 16 bits   ; 48 LEs        ; 48 LEs               ; 0 LEs                  ; Yes        ; |processor_top|pipelined_processor:u_cpu|EW_Register:EW_Reg|reg_write_data_0_out[9] ;
+; 9:1                ; 16 bits   ; 96 LEs        ; 96 LEs               ; 0 LEs                  ; Yes        ; |processor_top|pipelined_processor:u_cpu|DE_Register:DE_Reg|reg_data_2_out[0]       ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[7][10]    ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[6][2]     ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[5][8]     ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[4][4]     ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[3][12]    ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[2][12]    ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[1][11]    ;
+; 4:1                ; 16 bits   ; 32 LEs        ; 0 LEs                ; 32 LEs                 ; Yes        ; |processor_top|pipelined_processor:u_cpu|reg_file:reg_file_unit|registers[0][8]     ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |processor_top|pipelined_processor:u_cpu|alu_operand_2[12]                          ;
+; 4:1                ; 8 bits    ; 16 LEs        ; 16 LEs               ; 0 LEs                  ; No         ; |processor_top|pipelined_processor:u_cpu|alu_operand_2[0]                           ;
+; 9:1                ; 11 bits   ; 66 LEs        ; 66 LEs               ; 0 LEs                  ; No         ; |processor_top|pipelined_processor:u_cpu|fwd_decode_A[1]                            ;
+; 32:1               ; 12 bits   ; 252 LEs       ; 132 LEs              ; 120 LEs                ; No         ; |processor_top|pipelined_processor:u_cpu|ALU:alu|Mux26                              ;
+; 10:1               ; 3 bits    ; 18 LEs        ; 12 LEs               ; 6 LEs                  ; No         ; |processor_top|pipelined_processor:u_cpu|ALU:alu|Mux32                              ;
+; 33:1               ; 7 bits    ; 154 LEs       ; 112 LEs              ; 42 LEs                 ; No         ; |processor_top|pipelined_processor:u_cpu|ALU:alu|result_0[4]                        ;
+; 34:1               ; 7 bits    ; 154 LEs       ; 112 LEs              ; 42 LEs                 ; No         ; |processor_top|pipelined_processor:u_cpu|ALU:alu|result_0[9]                        ;
++--------------------+-----------+---------------+----------------------+------------------------+------------+-------------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------+
+; Source assignments for pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0|altsyncram_rhg1:auto_generated ;
++---------------------------------+--------------------+------+----------------------------------------------------+
+; Assignment                      ; Value              ; From ; To                                                 ;
++---------------------------------+--------------------+------+----------------------------------------------------+
+; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                  ;
++---------------------------------+--------------------+------+----------------------------------------------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------+
+; Source assignments for pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0|altsyncram_tbk1:auto_generated ;
++---------------------------------+--------------------+------+-----------------------------------------------------------+
+; Assignment                      ; Value              ; From ; To                                                        ;
++---------------------------------+--------------------+------+-----------------------------------------------------------+
+; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                         ;
++---------------------------------+--------------------+------+-----------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0            ;
++------------------------------------+------------------------------------------------------------------+----------------+
+; Parameter Name                     ; Value                                                            ; Type           ;
++------------------------------------+------------------------------------------------------------------+----------------+
+; BYTE_SIZE_BLOCK                    ; 8                                                                ; Untyped        ;
+; AUTO_CARRY_CHAINS                  ; ON                                                               ; AUTO_CARRY     ;
+; IGNORE_CARRY_BUFFERS               ; OFF                                                              ; IGNORE_CARRY   ;
+; AUTO_CASCADE_CHAINS                ; ON                                                               ; AUTO_CASCADE   ;
+; IGNORE_CASCADE_BUFFERS             ; OFF                                                              ; IGNORE_CASCADE ;
+; WIDTH_BYTEENA                      ; 1                                                                ; Untyped        ;
+; OPERATION_MODE                     ; ROM                                                              ; Untyped        ;
+; WIDTH_A                            ; 16                                                               ; Untyped        ;
+; WIDTHAD_A                          ; 11                                                               ; Untyped        ;
+; NUMWORDS_A                         ; 2048                                                             ; Untyped        ;
+; OUTDATA_REG_A                      ; UNREGISTERED                                                     ; Untyped        ;
+; ADDRESS_ACLR_A                     ; NONE                                                             ; Untyped        ;
+; OUTDATA_ACLR_A                     ; NONE                                                             ; Untyped        ;
+; WRCONTROL_ACLR_A                   ; NONE                                                             ; Untyped        ;
+; INDATA_ACLR_A                      ; NONE                                                             ; Untyped        ;
+; BYTEENA_ACLR_A                     ; NONE                                                             ; Untyped        ;
+; WIDTH_B                            ; 1                                                                ; Untyped        ;
+; WIDTHAD_B                          ; 1                                                                ; Untyped        ;
+; NUMWORDS_B                         ; 1                                                                ; Untyped        ;
+; INDATA_REG_B                       ; CLOCK1                                                           ; Untyped        ;
+; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1                                                           ; Untyped        ;
+; RDCONTROL_REG_B                    ; CLOCK1                                                           ; Untyped        ;
+; ADDRESS_REG_B                      ; CLOCK1                                                           ; Untyped        ;
+; OUTDATA_REG_B                      ; UNREGISTERED                                                     ; Untyped        ;
+; BYTEENA_REG_B                      ; CLOCK1                                                           ; Untyped        ;
+; INDATA_ACLR_B                      ; NONE                                                             ; Untyped        ;
+; WRCONTROL_ACLR_B                   ; NONE                                                             ; Untyped        ;
+; ADDRESS_ACLR_B                     ; NONE                                                             ; Untyped        ;
+; OUTDATA_ACLR_B                     ; NONE                                                             ; Untyped        ;
+; RDCONTROL_ACLR_B                   ; NONE                                                             ; Untyped        ;
+; BYTEENA_ACLR_B                     ; NONE                                                             ; Untyped        ;
+; WIDTH_BYTEENA_A                    ; 1                                                                ; Untyped        ;
+; WIDTH_BYTEENA_B                    ; 1                                                                ; Untyped        ;
+; RAM_BLOCK_TYPE                     ; AUTO                                                             ; Untyped        ;
+; BYTE_SIZE                          ; 8                                                                ; Untyped        ;
+; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                        ; Untyped        ;
+; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_NO_NBE_READ                                             ; Untyped        ;
+; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ                                             ; Untyped        ;
+; INIT_FILE                          ; db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif ; Untyped        ;
+; INIT_FILE_LAYOUT                   ; PORT_A                                                           ; Untyped        ;
+; MAXIMUM_DEPTH                      ; 0                                                                ; Untyped        ;
+; CLOCK_ENABLE_INPUT_A               ; NORMAL                                                           ; Untyped        ;
+; CLOCK_ENABLE_INPUT_B               ; NORMAL                                                           ; Untyped        ;
+; CLOCK_ENABLE_OUTPUT_A              ; NORMAL                                                           ; Untyped        ;
+; CLOCK_ENABLE_OUTPUT_B              ; NORMAL                                                           ; Untyped        ;
+; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN                                                  ; Untyped        ;
+; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN                                                  ; Untyped        ;
+; ENABLE_ECC                         ; FALSE                                                            ; Untyped        ;
+; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                                                            ; Untyped        ;
+; WIDTH_ECCSTATUS                    ; 3                                                                ; Untyped        ;
+; DEVICE_FAMILY                      ; Cyclone V                                                        ; Untyped        ;
+; CBXI_PARAMETER                     ; altsyncram_rhg1                                                  ; Untyped        ;
++------------------------------------+------------------------------------------------------------------+----------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++--------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0 ;
++------------------------------------+----------------------+--------------------------------------------------------+
+; Parameter Name                     ; Value                ; Type                                                   ;
++------------------------------------+----------------------+--------------------------------------------------------+
+; BYTE_SIZE_BLOCK                    ; 8                    ; Untyped                                                ;
+; AUTO_CARRY_CHAINS                  ; ON                   ; AUTO_CARRY                                             ;
+; IGNORE_CARRY_BUFFERS               ; OFF                  ; IGNORE_CARRY                                           ;
+; AUTO_CASCADE_CHAINS                ; ON                   ; AUTO_CASCADE                                           ;
+; IGNORE_CASCADE_BUFFERS             ; OFF                  ; IGNORE_CASCADE                                         ;
+; WIDTH_BYTEENA                      ; 1                    ; Untyped                                                ;
+; OPERATION_MODE                     ; DUAL_PORT            ; Untyped                                                ;
+; WIDTH_A                            ; 16                   ; Untyped                                                ;
+; WIDTHAD_A                          ; 11                   ; Untyped                                                ;
+; NUMWORDS_A                         ; 2048                 ; Untyped                                                ;
+; OUTDATA_REG_A                      ; UNREGISTERED         ; Untyped                                                ;
+; ADDRESS_ACLR_A                     ; NONE                 ; Untyped                                                ;
+; OUTDATA_ACLR_A                     ; NONE                 ; Untyped                                                ;
+; WRCONTROL_ACLR_A                   ; NONE                 ; Untyped                                                ;
+; INDATA_ACLR_A                      ; NONE                 ; Untyped                                                ;
+; BYTEENA_ACLR_A                     ; NONE                 ; Untyped                                                ;
+; WIDTH_B                            ; 16                   ; Untyped                                                ;
+; WIDTHAD_B                          ; 11                   ; Untyped                                                ;
+; NUMWORDS_B                         ; 2048                 ; Untyped                                                ;
+; INDATA_REG_B                       ; CLOCK1               ; Untyped                                                ;
+; WRCONTROL_WRADDRESS_REG_B          ; CLOCK1               ; Untyped                                                ;
+; RDCONTROL_REG_B                    ; CLOCK1               ; Untyped                                                ;
+; ADDRESS_REG_B                      ; CLOCK0               ; Untyped                                                ;
+; OUTDATA_REG_B                      ; UNREGISTERED         ; Untyped                                                ;
+; BYTEENA_REG_B                      ; CLOCK1               ; Untyped                                                ;
+; INDATA_ACLR_B                      ; NONE                 ; Untyped                                                ;
+; WRCONTROL_ACLR_B                   ; NONE                 ; Untyped                                                ;
+; ADDRESS_ACLR_B                     ; NONE                 ; Untyped                                                ;
+; OUTDATA_ACLR_B                     ; NONE                 ; Untyped                                                ;
+; RDCONTROL_ACLR_B                   ; NONE                 ; Untyped                                                ;
+; BYTEENA_ACLR_B                     ; NONE                 ; Untyped                                                ;
+; WIDTH_BYTEENA_A                    ; 1                    ; Untyped                                                ;
+; WIDTH_BYTEENA_B                    ; 1                    ; Untyped                                                ;
+; RAM_BLOCK_TYPE                     ; AUTO                 ; Untyped                                                ;
+; BYTE_SIZE                          ; 8                    ; Untyped                                                ;
+; READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE            ; Untyped                                                ;
+; READ_DURING_WRITE_MODE_PORT_A      ; NEW_DATA_NO_NBE_READ ; Untyped                                                ;
+; READ_DURING_WRITE_MODE_PORT_B      ; NEW_DATA_NO_NBE_READ ; Untyped                                                ;
+; INIT_FILE                          ; UNUSED               ; Untyped                                                ;
+; INIT_FILE_LAYOUT                   ; PORT_A               ; Untyped                                                ;
+; MAXIMUM_DEPTH                      ; 0                    ; Untyped                                                ;
+; CLOCK_ENABLE_INPUT_A               ; NORMAL               ; Untyped                                                ;
+; CLOCK_ENABLE_INPUT_B               ; NORMAL               ; Untyped                                                ;
+; CLOCK_ENABLE_OUTPUT_A              ; NORMAL               ; Untyped                                                ;
+; CLOCK_ENABLE_OUTPUT_B              ; NORMAL               ; Untyped                                                ;
+; CLOCK_ENABLE_CORE_A                ; USE_INPUT_CLKEN      ; Untyped                                                ;
+; CLOCK_ENABLE_CORE_B                ; USE_INPUT_CLKEN      ; Untyped                                                ;
+; ENABLE_ECC                         ; FALSE                ; Untyped                                                ;
+; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                ; Untyped                                                ;
+; WIDTH_ECCSTATUS                    ; 3                    ; Untyped                                                ;
+; DEVICE_FAMILY                      ; Cyclone V            ; Untyped                                                ;
+; CBXI_PARAMETER                     ; altsyncram_tbk1      ; Untyped                                                ;
++------------------------------------+----------------------+--------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0 ;
++------------------------+----------------+----------------------------------------------------------+
+; Parameter Name         ; Value          ; Type                                                     ;
++------------------------+----------------+----------------------------------------------------------+
+; LPM_WIDTHN             ; 16             ; Untyped                                                  ;
+; LPM_WIDTHD             ; 16             ; Untyped                                                  ;
+; LPM_NREPRESENTATION    ; UNSIGNED       ; Untyped                                                  ;
+; LPM_DREPRESENTATION    ; UNSIGNED       ; Untyped                                                  ;
+; LPM_PIPELINE           ; 0              ; Untyped                                                  ;
+; LPM_REMAINDERPOSITIVE  ; TRUE           ; Untyped                                                  ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                                                  ;
+; CBXI_PARAMETER         ; lpm_divide_a5m ; Untyped                                                  ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                                                  ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                                                  ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY                                               ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY                                             ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE                                             ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE                                           ;
++------------------------+----------------+----------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++----------------------------------------------------------------------------------------------------+
+; Parameter Settings for Inferred Entity Instance: pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0 ;
++------------------------+----------------+----------------------------------------------------------+
+; Parameter Name         ; Value          ; Type                                                     ;
++------------------------+----------------+----------------------------------------------------------+
+; LPM_WIDTHN             ; 16             ; Untyped                                                  ;
+; LPM_WIDTHD             ; 16             ; Untyped                                                  ;
+; LPM_NREPRESENTATION    ; UNSIGNED       ; Untyped                                                  ;
+; LPM_DREPRESENTATION    ; UNSIGNED       ; Untyped                                                  ;
+; LPM_PIPELINE           ; 0              ; Untyped                                                  ;
+; LPM_REMAINDERPOSITIVE  ; TRUE           ; Untyped                                                  ;
+; MAXIMIZE_SPEED         ; 5              ; Untyped                                                  ;
+; CBXI_PARAMETER         ; lpm_divide_7dm ; Untyped                                                  ;
+; CARRY_CHAIN            ; MANUAL         ; Untyped                                                  ;
+; OPTIMIZE_FOR_SPEED     ; 5              ; Untyped                                                  ;
+; AUTO_CARRY_CHAINS      ; ON             ; AUTO_CARRY                                               ;
+; IGNORE_CARRY_BUFFERS   ; OFF            ; IGNORE_CARRY                                             ;
+; AUTO_CASCADE_CHAINS    ; ON             ; AUTO_CASCADE                                             ;
+; IGNORE_CASCADE_BUFFERS ; OFF            ; IGNORE_CASCADE                                           ;
++------------------------+----------------+----------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++---------------------------------------------------------------------------------------------------------------+
+; altsyncram Parameter Settings by Entity Instance                                                              ;
++-------------------------------------------+-------------------------------------------------------------------+
+; Name                                      ; Value                                                             ;
++-------------------------------------------+-------------------------------------------------------------------+
+; Number of entity instances                ; 2                                                                 ;
+; Entity Instance                           ; pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0        ;
+;     -- OPERATION_MODE                     ; ROM                                                               ;
+;     -- WIDTH_A                            ; 16                                                                ;
+;     -- NUMWORDS_A                         ; 2048                                                              ;
+;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                      ;
+;     -- WIDTH_B                            ; 1                                                                 ;
+;     -- NUMWORDS_B                         ; 1                                                                 ;
+;     -- ADDRESS_REG_B                      ; CLOCK1                                                            ;
+;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                      ;
+;     -- RAM_BLOCK_TYPE                     ; AUTO                                                              ;
+;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                         ;
+; Entity Instance                           ; pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0 ;
+;     -- OPERATION_MODE                     ; DUAL_PORT                                                         ;
+;     -- WIDTH_A                            ; 16                                                                ;
+;     -- NUMWORDS_A                         ; 2048                                                              ;
+;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                      ;
+;     -- WIDTH_B                            ; 16                                                                ;
+;     -- NUMWORDS_B                         ; 2048                                                              ;
+;     -- ADDRESS_REG_B                      ; CLOCK0                                                            ;
+;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                      ;
+;     -- RAM_BLOCK_TYPE                     ; AUTO                                                              ;
+;     -- READ_DURING_WRITE_MODE_MIXED_PORTS ; DONT_CARE                                                         ;
++-------------------------------------------+-------------------------------------------------------------------+
+
+
++----------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "pipelined_processor:u_cpu|HAZARD_Unit:hazard_unit"                                        ;
++------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port       ; Type   ; Severity ; Details                                                                             ;
++------------+--------+----------+-------------------------------------------------------------------------------------+
+; alu_en_out ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++------------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "pipelined_processor:u_cpu|EW_Register:EW_Reg"                                                 ;
++----------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port           ; Type   ; Severity ; Details                                                                             ;
++----------------+--------+----------+-------------------------------------------------------------------------------------+
+; io_op_out      ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
+; mem_to_reg_out ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++----------------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "pipelined_processor:u_cpu|DE_Register:DE_Reg"                                         ;
++--------+--------+----------+-------------------------------------------------------------------------------------+
+; Port   ; Type   ; Severity ; Details                                                                             ;
++--------+--------+----------+-------------------------------------------------------------------------------------+
+; pc_out ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++--------+--------+----------+-------------------------------------------------------------------------------------+
+
+
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "pipelined_processor:u_cpu|control_unit:control_unit"                                                                                        ;
++------+-------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; Port ; Type  ; Severity ; Details                                                                                                                                      ;
++------+-------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+; clk  ; Input ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
++------+-------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
+
+
++-----------------------------------------------------+
+; Post-Synthesis Netlist Statistics for Top Partition ;
++-----------------------+-----------------------------+
+; Type                  ; Count                       ;
++-----------------------+-----------------------------+
+; arriav_ff             ; 391                         ;
+;     CLR               ; 92                          ;
+;     ENA               ; 16                          ;
+;     ENA CLR           ; 93                          ;
+;     ENA CLR SCLR      ; 11                          ;
+;     ENA CLR SLD       ; 128                         ;
+;     ENA SCLR          ; 16                          ;
+;     plain             ; 35                          ;
+; arriav_lcell_comb     ; 1514                        ;
+;     arith             ; 384                         ;
+;         0 data inputs ; 59                          ;
+;         1 data inputs ; 11                          ;
+;         4 data inputs ; 16                          ;
+;         5 data inputs ; 298                         ;
+;     extend            ; 14                          ;
+;         7 data inputs ; 14                          ;
+;     normal            ; 1106                        ;
+;         0 data inputs ; 2                           ;
+;         1 data inputs ; 6                           ;
+;         2 data inputs ; 114                         ;
+;         3 data inputs ; 128                         ;
+;         4 data inputs ; 379                         ;
+;         5 data inputs ; 260                         ;
+;         6 data inputs ; 217                         ;
+;     shared            ; 10                          ;
+;         0 data inputs ; 4                           ;
+;         2 data inputs ; 4                           ;
+;         4 data inputs ; 2                           ;
+; arriav_mac            ; 1                           ;
+; boundary_port         ; 67                          ;
+; stratixv_ram_block    ; 32                          ;
+;                       ;                             ;
+; Max LUT depth         ; 40.20                       ;
+; Average LUT depth     ; 18.47                       ;
++-----------------------+-----------------------------+
+
+
++-------------------------------+
+; Elapsed Time Per Partition    ;
++----------------+--------------+
+; Partition Name ; Elapsed Time ;
++----------------+--------------+
+; Top            ; 00:00:03     ;
++----------------+--------------+
+
+
++-------------------------------+
+; Analysis & Synthesis Messages ;
++-------------------------------+
+Info: *******************************************************************
+Info: Running Quartus Prime Analysis & Synthesis
+    Info: Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
+    Info: Processing started: Sat Nov 21 01:45:52 2026
+Info: Command: quartus_map --read_settings_files=on --write_settings_files=off pipelined_processor -c pipelined_processor
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 12 of the 12 processors detected
+Info (12021): Found 1 design units, including 1 entities, in source file reg_file_tb.v
+    Info (12023): Found entity 1: registers_tb File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/reg_file_tb.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file reg_file.v
+    Info (12023): Found entity 1: reg_file File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/reg_file.v Line: 1
+Info (12021): Found 1 design units, including 1 entities, in source file program_counter_tb.v
+    Info (12023): Found entity 1: pc_verify_tb File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/program_counter_tb.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file program_counter.v
+    Info (12023): Found entity 1: program_counter File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/program_counter.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file processor.v
+    Info (12023): Found entity 1: pipelined_processor File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 3
+Info (12021): Found 3 design units, including 3 entities, in source file pipeline_regs.v
+    Info (12023): Found entity 1: FD_Register File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 3
+    Info (12023): Found entity 2: DE_Register File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 28
+    Info (12023): Found entity 3: EW_Register File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 133
+Info (12021): Found 0 design units, including 0 entities, in source file parameters.v
+Info (12021): Found 1 design units, including 1 entities, in source file memory_tb.v
+    Info (12023): Found entity 1: memory_tb File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/memory_tb.v Line: 23
+Info (12021): Found 1 design units, including 1 entities, in source file memory.v
+    Info (12023): Found entity 1: memory File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/memory.v Line: 3
+Info (12021): Found 1 design units, including 1 entities, in source file hazard_unit.v
+    Info (12023): Found entity 1: HAZARD_Unit File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/HAZARD_Unit.v Line: 3
+Info (12021): Found 1 design units, including 1 entities, in source file control_unit.v
+    Info (12023): Found entity 1: control_unit File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/control_unit.v Line: 2
+Info (12021): Found 1 design units, including 1 entities, in source file branch_register.v
+    Info (12023): Found entity 1: branch_register File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 1
+Info (12021): Found 0 design units, including 0 entities, in source file alu_tb.v
+Info (12021): Found 2 design units, including 2 entities, in source file alu.v
+    Info (12023): Found entity 1: ALU File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 2
+    Info (12023): Found entity 2: Flag_Register File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 210
+Info (12021): Found 0 design units, including 0 entities, in source file pipelined_processor_tb_top.v
+Info (12021): Found 2 design units, including 2 entities, in source file processor_top.v
+    Info (12023): Found entity 1: processor_top File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 4
+    Info (12023): Found entity 2: decoder_hex File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 75
+Info (12127): Elaborating entity "processor_top" for the top level hierarchy
+Info (12128): Elaborating entity "pipelined_processor" for hierarchy "pipelined_processor:u_cpu" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 56
+Warning (10027): Verilog HDL or VHDL warning at the processor.v(118): index expression is not wide enough to address all of the elements in the array File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 118
+Info (10648): Verilog HDL Display System Task info at processor.v(383): \n=== Starting Processor Test ===\n File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 383
+Warning (10030): Net "instruction_mem.data_a" at processor.v(15) has no driver or initial value, using a default initial value '0' File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 15
+Warning (10030): Net "instruction_mem.waddr_a" at processor.v(15) has no driver or initial value, using a default initial value '0' File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 15
+Warning (10030): Net "instruction_mem.we_a" at processor.v(15) has no driver or initial value, using a default initial value '0' File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 15
+Info (12128): Elaborating entity "program_counter" for hierarchy "pipelined_processor:u_cpu|program_counter:PC" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 147
+Info (12128): Elaborating entity "FD_Register" for hierarchy "pipelined_processor:u_cpu|FD_Register:FD_Reg" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 160
+Info (12128): Elaborating entity "branch_register" for hierarchy "pipelined_processor:u_cpu|branch_register:Branch_Reg" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 169
+Warning (10240): Verilog HDL Always Construct warning at branch_register.v(9): inferring latch(es) for variable "stored_addr", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 9
+Info (10041): Inferred latch for "stored_addr[0]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[1]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[2]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[3]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[4]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[5]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[6]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[7]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[8]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[9]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (10041): Inferred latch for "stored_addr[10]" at branch_register.v(13) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/branch_register.v Line: 13
+Info (12128): Elaborating entity "reg_file" for hierarchy "pipelined_processor:u_cpu|reg_file:reg_file_unit" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 187
+Info (12128): Elaborating entity "Flag_Register" for hierarchy "pipelined_processor:u_cpu|Flag_Register:flag_reg" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 196
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(217): inferring latch(es) for variable "current_flags", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[0]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[1]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[2]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[3]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[4]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[5]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[6]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[7]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[8]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[9]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[10]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[11]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[12]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[13]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[14]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (10041): Inferred latch for "current_flags[15]" at ALU.v(217) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 217
+Info (12128): Elaborating entity "control_unit" for hierarchy "pipelined_processor:u_cpu|control_unit:control_unit" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 215
+Info (12128): Elaborating entity "DE_Register" for hierarchy "pipelined_processor:u_cpu|DE_Register:DE_Reg" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 268
+Warning (10230): Verilog HDL assignment warning at pipeline_regs.v(113): truncated value with size 4 to match size of target (1) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 113
+Info (12128): Elaborating entity "ALU" for hierarchy "pipelined_processor:u_cpu|ALU:alu" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 286
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(59): inferring latch(es) for variable "last_lbh_result", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(59): inferring latch(es) for variable "last_lbh_reg", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(59): inferring latch(es) for variable "lbh_pending", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Warning (10230): Verilog HDL assignment warning at ALU.v(111): truncated value with size 32 to match size of target (1) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 111
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(70): inferring latch(es) for variable "result_0", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 70
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(70): inferring latch(es) for variable "result_1", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 70
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(70): inferring latch(es) for variable "next_flags", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 70
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(70): inferring latch(es) for variable "add_temp", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 70
+Warning (10240): Verilog HDL Always Construct warning at ALU.v(70): inferring latch(es) for variable "mul_temp", which holds its previous value in one or more paths through the always construct File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 70
+Info (10041): Inferred latch for "next_flags[0]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[1]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[2]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[3]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[4]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[5]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[6]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[7]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[8]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[9]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[10]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[11]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[12]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[13]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[14]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "next_flags[15]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[0]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[1]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[2]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[3]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[4]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[5]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[6]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[7]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[8]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[9]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[10]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[11]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[12]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[13]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[14]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_1[15]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[0]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[1]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[2]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[3]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[4]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[5]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[6]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[7]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[8]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[9]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[10]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[11]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[12]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[13]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[14]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "result_0[15]" at ALU.v(88) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+Info (10041): Inferred latch for "lbh_pending" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_reg[0]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_reg[1]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_reg[2]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[8]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[9]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[10]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[11]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[12]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[13]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[14]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (10041): Inferred latch for "last_lbh_result[15]" at ALU.v(59) File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 59
+Info (12128): Elaborating entity "EW_Register" for hierarchy "pipelined_processor:u_cpu|EW_Register:EW_Reg" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 330
+Info (12128): Elaborating entity "memory" for hierarchy "pipelined_processor:u_cpu|memory:data_memory" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 341
+Info (12128): Elaborating entity "HAZARD_Unit" for hierarchy "pipelined_processor:u_cpu|HAZARD_Unit:hazard_unit" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor.v Line: 377
+Warning (10036): Verilog HDL or VHDL warning at HAZARD_Unit.v(71): object "raw_hazard" assigned a value but never read File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/HAZARD_Unit.v Line: 71
+Warning (10036): Verilog HDL or VHDL warning at HAZARD_Unit.v(72): object "lbh_lbl_hazard" assigned a value but never read File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/HAZARD_Unit.v Line: 72
+Warning (10036): Verilog HDL or VHDL warning at HAZARD_Unit.v(81): object "control_hazard" assigned a value but never read File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/HAZARD_Unit.v Line: 81
+Info (12128): Elaborating entity "decoder_hex" for hierarchy "decoder_hex:u_h0" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 61
+Warning (19016): Clock multiplexers are found and protected
+    Warning (19017): Found clock multiplexer proc_clk File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 36
+Warning (276020): Inferred RAM node "pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
+Info (19000): Inferred 2 megafunctions from design logic
+    Info (276029): Inferred altsyncram megafunction from the following design logic: "pipelined_processor:u_cpu|instruction_mem_rtl_0" 
+        Info (286033): Parameter OPERATION_MODE set to ROM
+        Info (286033): Parameter WIDTH_A set to 16
+        Info (286033): Parameter WIDTHAD_A set to 11
+        Info (286033): Parameter NUMWORDS_A set to 2048
+        Info (286033): Parameter OUTDATA_REG_A set to UNREGISTERED
+        Info (286033): Parameter ADDRESS_ACLR_A set to NONE
+        Info (286033): Parameter OUTDATA_ACLR_A set to NONE
+        Info (286033): Parameter INDATA_ACLR_A set to NONE
+        Info (286033): Parameter WRCONTROL_ACLR_A set to NONE
+        Info (286033): Parameter INIT_FILE set to db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif
+    Info (276029): Inferred altsyncram megafunction from the following design logic: "pipelined_processor:u_cpu|memory:data_memory|mem_rtl_0" 
+        Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
+        Info (286033): Parameter WIDTH_A set to 16
+        Info (286033): Parameter WIDTHAD_A set to 11
+        Info (286033): Parameter NUMWORDS_A set to 2048
+        Info (286033): Parameter WIDTH_B set to 16
+        Info (286033): Parameter WIDTHAD_B set to 11
+        Info (286033): Parameter NUMWORDS_B set to 2048
+        Info (286033): Parameter ADDRESS_ACLR_A set to NONE
+        Info (286033): Parameter OUTDATA_REG_B set to UNREGISTERED
+        Info (286033): Parameter ADDRESS_ACLR_B set to NONE
+        Info (286033): Parameter OUTDATA_ACLR_B set to NONE
+        Info (286033): Parameter ADDRESS_REG_B set to CLOCK0
+        Info (286033): Parameter INDATA_ACLR_A set to NONE
+        Info (286033): Parameter WRCONTROL_ACLR_A set to NONE
+Info (278001): Inferred 2 megafunctions from design logic
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "pipelined_processor:u_cpu|ALU:alu|Mod0" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 117
+    Info (278004): Inferred divider/modulo megafunction ("lpm_divide") from the following logic: "pipelined_processor:u_cpu|ALU:alu|Div0" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 116
+Info (12130): Elaborated megafunction instantiation "pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0"
+Info (12133): Instantiated megafunction "pipelined_processor:u_cpu|altsyncram:instruction_mem_rtl_0" with the following parameter:
+    Info (12134): Parameter "OPERATION_MODE" = "ROM"
+    Info (12134): Parameter "WIDTH_A" = "16"
+    Info (12134): Parameter "WIDTHAD_A" = "11"
+    Info (12134): Parameter "NUMWORDS_A" = "2048"
+    Info (12134): Parameter "OUTDATA_REG_A" = "UNREGISTERED"
+    Info (12134): Parameter "ADDRESS_ACLR_A" = "NONE"
+    Info (12134): Parameter "OUTDATA_ACLR_A" = "NONE"
+    Info (12134): Parameter "INDATA_ACLR_A" = "NONE"
+    Info (12134): Parameter "WRCONTROL_ACLR_A" = "NONE"
+    Info (12134): Parameter "INIT_FILE" = "db/pipelined_processor.ram0_pipelined_processor_761410eb.hdl.mif"
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_rhg1.tdf
+    Info (12023): Found entity 1: altsyncram_rhg1 File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/altsyncram_rhg1.tdf Line: 28
+Info (12130): Elaborated megafunction instantiation "pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0"
+Info (12133): Instantiated megafunction "pipelined_processor:u_cpu|memory:data_memory|altsyncram:mem_rtl_0" with the following parameter:
+    Info (12134): Parameter "OPERATION_MODE" = "DUAL_PORT"
+    Info (12134): Parameter "WIDTH_A" = "16"
+    Info (12134): Parameter "WIDTHAD_A" = "11"
+    Info (12134): Parameter "NUMWORDS_A" = "2048"
+    Info (12134): Parameter "WIDTH_B" = "16"
+    Info (12134): Parameter "WIDTHAD_B" = "11"
+    Info (12134): Parameter "NUMWORDS_B" = "2048"
+    Info (12134): Parameter "ADDRESS_ACLR_A" = "NONE"
+    Info (12134): Parameter "OUTDATA_REG_B" = "UNREGISTERED"
+    Info (12134): Parameter "ADDRESS_ACLR_B" = "NONE"
+    Info (12134): Parameter "OUTDATA_ACLR_B" = "NONE"
+    Info (12134): Parameter "ADDRESS_REG_B" = "CLOCK0"
+    Info (12134): Parameter "INDATA_ACLR_A" = "NONE"
+    Info (12134): Parameter "WRCONTROL_ACLR_A" = "NONE"
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_tbk1.tdf
+    Info (12023): Found entity 1: altsyncram_tbk1 File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/altsyncram_tbk1.tdf Line: 28
+Info (12130): Elaborated megafunction instantiation "pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 117
+Info (12133): Instantiated megafunction "pipelined_processor:u_cpu|ALU:alu|lpm_divide:Mod0" with the following parameter: File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 117
+    Info (12134): Parameter "LPM_WIDTHN" = "16"
+    Info (12134): Parameter "LPM_WIDTHD" = "16"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "UNSIGNED"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_a5m.tdf
+    Info (12023): Found entity 1: lpm_divide_a5m File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/lpm_divide_a5m.tdf Line: 25
+Info (12021): Found 1 design units, including 1 entities, in source file db/sign_div_unsign_dnh.tdf
+    Info (12023): Found entity 1: sign_div_unsign_dnh File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/sign_div_unsign_dnh.tdf Line: 25
+Info (12021): Found 1 design units, including 1 entities, in source file db/alt_u_div_03f.tdf
+    Info (12023): Found entity 1: alt_u_div_03f File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/alt_u_div_03f.tdf Line: 23
+Info (12130): Elaborated megafunction instantiation "pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 116
+Info (12133): Instantiated megafunction "pipelined_processor:u_cpu|ALU:alu|lpm_divide:Div0" with the following parameter: File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 116
+    Info (12134): Parameter "LPM_WIDTHN" = "16"
+    Info (12134): Parameter "LPM_WIDTHD" = "16"
+    Info (12134): Parameter "LPM_NREPRESENTATION" = "UNSIGNED"
+    Info (12134): Parameter "LPM_DREPRESENTATION" = "UNSIGNED"
+Info (12021): Found 1 design units, including 1 entities, in source file db/lpm_divide_7dm.tdf
+    Info (12023): Found entity 1: lpm_divide_7dm File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/db/lpm_divide_7dm.tdf Line: 25
+Warning (12241): 1 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[0] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[1] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[2] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[3] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[4] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[5] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[6] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[7] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[8] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[9] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[10] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[11] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[12] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[13] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[14] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_0[15] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[0] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[0] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[2] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[4] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[6] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[8] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[10] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[12] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[14] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[1] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[3] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[5] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[7] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[9] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[11] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[13] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|next_flags[15] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|alu_op_out File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 76
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[1] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[2] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[3] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[4] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[5] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[6] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[7] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[8] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[9] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[10] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[11] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[12] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[13] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[14] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13012): Latch pipelined_processor:u_cpu|ALU:alu|result_1[15] has unsafe behavior File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/ALU.v Line: 88
+    Warning (13013): Ports D and ENA on the latch are fed by the same signal pipelined_processor:u_cpu|DE_Register:DE_Reg|opcode_out[4] File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/pipeline_regs.v Line: 105
+Warning (13024): Output pins are stuck at VCC or GND
+    Warning (13410): Pin "HEX4[0]" is stuck at VCC File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 13
+    Warning (13410): Pin "HEX4[1]" is stuck at VCC File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 13
+    Warning (13410): Pin "HEX4[4]" is stuck at GND File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 13
+    Warning (13410): Pin "HEX4[6]" is stuck at GND File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 13
+    Warning (13410): Pin "HEX5[1]" is stuck at GND File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 15
+    Warning (13410): Pin "HEX5[2]" is stuck at GND File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 15
+    Warning (13410): Pin "HEX5[6]" is stuck at VCC File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 15
+Info (286030): Timing-Driven Synthesis is running
+Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
+    Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
+Warning (21074): Design contains 1 input pin(s) that do not drive logic
+    Warning (15610): No output dependent on input pin "KEY[3]" File: C:/Users/VB100/Desktop/Vasanthi_Folder/MINI-RISC-Pipeline-main/processor_top.v Line: 7
+Info (21057): Implemented 1929 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 15 input pins
+    Info (21059): Implemented 52 output pins
+    Info (21061): Implemented 1829 logic cells
+    Info (21064): Implemented 32 RAM segments
+    Info (21062): Implemented 1 DSP elements
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 130 warnings
+    Info: Peak virtual memory: 4911 megabytes
+    Info: Processing ended: Sat Nov 21 01:46:03 2026
+    Info: Elapsed time: 00:00:11
+    Info: Total CPU time (on all processors): 00:00:19
+
+
