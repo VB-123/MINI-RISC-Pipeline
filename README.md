@@ -80,6 +80,22 @@ Synthesized and implemented on an **Intel Cyclone V FPGA (`5CSEMA5F31C6`, Terasi
 | **Fast 1100mV 0°C** *(Worst Hold)* | +14.159 ns | **+0.220 ns** | **PASS** |
 
 * **Maximum Operating Frequency (`Fmax`):** **~100.4 MHz** (`9.956 ns` critical path delay at Slow 1100mV 85°C), providing over **2× timing margin** at the DE1-SoC's 50 MHz onboard clock.
+### DE1-SoC Board Hardware Mapping (`processor_top`)
+
+Because the processor uses a 16-bit `input_reg` and 16-bit `output_reg` while the DE1-SoC provides 10 slide switches (`SW[9:0]`), 4 push buttons (`KEY[3:0]`), and 6 seven-segment displays (`HEX0`–`HEX5`), the top-level wrapper implements **time-multiplexed byte loading** and **hexadecimal 7-segment display decoding**:
+
+| Board Peripheral | Signal | Function |
+| :--- | :--- | :--- |
+| **Slide Switches `[7:0]`** | `SW[7:0]` | 8-bit input data byte to load into `input_reg` |
+| **Slide Switch `8`** | `SW[8]` | Byte select (`0` = lower byte `[7:0]`, `1` = upper byte `[15:8]`) |
+| **Slide Switch `9`** | `SW[9]` | Execution mode (`0` = single-step via `KEY[2]`, `1` = continuous `50 MHz` clock) |
+| **Push Button `0`** | `KEY[0]` | Active-low synchronous/asynchronous system reset (`rst = ~KEY[0]`) |
+| **Push Button `1`** | `KEY[1]` | Latch `SW[7:0]` into the selected byte of `input_reg` (edge-detected) |
+| **Push Button `2`** | `KEY[2]` | Manual single-step clock pulse when `SW[9] = 0` (edge-detected) |
+| **7-Segment `HEX3`–`HEX0`** | `HEX[3:0]` | 16-bit hexadecimal readout (`0000`–`FFFF`) of `output_reg` / `input_reg` |
+| **7-Segment `HEX5`–`HEX4`** | `HEX[5:4]` | Mode indicator (`Ot` = viewing `output_reg`, `In` = previewing `input_reg`) |
+| **Red LEDs `[9:0]`** | `LEDR[9:0]` | Direct visual feedback of switch states (`SW[9:0]`) |
+
 
 ## 🛠️ Getting Started
 
