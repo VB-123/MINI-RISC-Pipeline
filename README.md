@@ -51,11 +51,30 @@ The design features specialized hardware protection modules to guarantee determi
 * **HAZARD Unit**: Monitors pipeline dependencies continuously. It directly manages pipeline control lines:
   * `Stall_F` / `Stall_D`: Holds instruction steps when data dependencies cannot be resolved by forwarding alone.
   * `Flush_F` / `Flush_D`: Flushes instruction lines immediately following an invalid branch prediction or control change.
+## Synthesis & Timing Results
 
-## FPGA Synthesis, Timing & Resource Utilization
+The same RTL was synthesized and timed in two tools to compare mapping and timing.
 
-Synthesized and implemented on an **Intel Cyclone V FPGA (`5CSEMA5F31C6`, Terasic DE1-SoC)** using **Quartus Prime 20.1 Lite Edition** with a 50 MHz (`20.000 ns`) primary clock constraint.
+### Vivado (Basys 3, Artix-7 `xc7a35tcpg236-1`), post-implementation, 100 MHz
 
+| Metric | Result |
+|---|---|
+| Clock constraint | 10 ns (100 MHz) |
+| Setup WNS | +0.585 ns |
+| Hold WHS | +0.047 ns |
+| Failing endpoints | 0 |
+| Slice LUTs | 1305 (6%), of which 704 used as distributed RAM |
+| Slice registers | 328 (<1%) |
+| F7 muxes | 64 |
+| DSP48 | 1 (16×16 `MUL`) |
+| Block RAM | 0 |
+| Bonded IOs | 34 |
+
+Registers by block: register file 128, D/E 85, E/W 71, F/D 12, PC 5.
+Critical path: `DE_Reg/immediate_out` to the ALU result and `EW_Reg` write data,
+6-7 logic levels, ~9.2 ns (4.9 ns logic, 4.3 ns routing).
+
+### Quartus Prime (Cyclone V 5CSEMA5F31C6), 50 MHz constraint (With DIV Operation)
 ### Resource Utilization (`Fitter Summary`)
 
 | Resource | Used | Available | Utilization |
@@ -96,6 +115,19 @@ Because the processor uses a 16-bit `input_reg` and 16-bit `output_reg` while th
 | **7-Segment `HEX5`–`HEX4`** | `HEX[5:4]` | Mode indicator (`Ot` = viewing `output_reg`, `In` = previewing `input_reg`) |
 | **Red LEDs `[9:0]`** | `LEDR[9:0]` | Direct visual feedback of switch states (`SW[9:0]`) |
 
+
+### Timing closure history
+
+The first Vivado run at 100 MHz failed with WNS -26.879 ns (about 27 MHz).
+The critical path had 84 logic levels and ended at `alu_result_1`: the
+combinational 16-bit `DIV`/`MOD` in the ALU. With `DIV` removed from the
+single-cycle ALU, timing closed with +0.585 ns slack.
+
+## Known Limitations / Future Work
+
+- **DIV/MOD** is stubbed out. Planned fix: a 16-cycle iterative restoring
+  divider that stalls the pipeline.
+- **I/O timing** (`input_reg`, `output_reg`) is not yet constrained.
 
 ## 🛠️ Getting Started
 
