@@ -132,8 +132,7 @@ single-cycle ALU, timing closed with +0.585 ns slack.
 ## 🛠️ Getting Started
 
 ### Tools Needed
-* **Simulation**: [Icarus Verilog (iverilog)](https://github.io)
-* **Waveforms**: [GTKWave](http://sourceforge.net)
-
+* **Simulation**: Xilinx Vivado
+* **Synthesis and Implementation**: Xilinx Vivado/ Intel Quartus Prime
 ## 📄 License
 This project is licensed under the MIT License.
